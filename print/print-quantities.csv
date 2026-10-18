@@ -1,0 +1,36 @@
+STL file,Qty - Option 1 (one test toy: 1 base set + frog shell),Qty - Option 2 (all five toys),Material,Supports,Size mm (x y z),Notes
+base_plate_left.stl,1,5,PLA,none,80 x 160 x 48,
+base_plate_right.stl,1,5,PLA,none,80 x 160 x 48,
+turntable.stl,1,5,PLA,yes - small supports under the plate and cradle window,150 x 150 x 48,
+column_left.stl,1,5,PLA,none,58 x 116 x 100,brim helps
+column_right.stl,1,5,PLA,none,58 x 116 x 100,brim helps
+bob_carriage.stl,1,5,PLA,none,112 x 77 x 63,
+lift_yoke.stl,1,5,PLA,none,22 x 7 x 39,
+lift_lever.stl,1,5,PLA,none,41 x 20 x 5,
+neck_base_A.stl,1,5,PETG (PLA ok for the test set),yes - small supports under the flange rim,62 x 62 x 54,print first for a servo fit check
+neck_rocker_B.stl,1,5,PETG (PLA ok for the test set),none,51 x 44 x 36,
+neck_head_plate_C.stl,1,5,PETG (PLA ok for the test set),none,88 x 88 x 36,
+head_half_left.stl,1,5,PLA,yes - crown of the dome and the collar flange,84 x 122 x 61,brim helps
+head_half_right.stl,1,5,PLA,yes - crown of the dome and the collar flange,84 x 122 x 61,brim helps
+shoulder_socket_left.stl,1,5,PLA,none,20 x 36 x 23,print one first for a servo fit check
+shoulder_socket_right.stl,1,5,PLA,none,20 x 36 x 23,
+shoulder_cap.stl,2,8,PLA,none,20 x 36 x 10,2 per round character (blanks the shoulder); none on the yeti
+arm_horn.stl,0,2,PLA,none,34 x 20 x 9,yeti only
+skin_ring_1.stl,1,1,PLA,none,110 x 110 x 3,one ring per shell
+skin_ring_2.stl,0,1,PLA,none,110 x 110 x 3,
+skin_ring_3.stl,0,1,PLA,none,110 x 110 x 3,
+skin_ring_4.stl,0,1,PLA,none,110 x 110 x 3,
+shell_frog_left.stl,1,1,PLA,yes - eye domes and cheeks (tree supports),100 x 132 x 71,hollow 1.5 mm wall: 3 walls 0-5% infill
+shell_frog_right.stl,1,1,PLA,yes - eye domes and cheeks (tree supports),100 x 132 x 71,hollow 1.5 mm wall: 3 walls 0-5% infill
+shell_heart_left.stl,0,1,PLA,yes - both lobes (tree supports),107 x 132 x 67,hollow 1.5 mm wall
+shell_heart_right.stl,0,1,PLA,yes - both lobes (tree supports),107 x 132 x 67,hollow 1.5 mm wall
+shell_pear_left.stl,0,1,PLA,yes - crown and stalk (tree supports),127 x 146 x 70,hollow 1.5 mm wall
+shell_pear_right.stl,0,1,PLA,yes - crown and stalk (tree supports),127 x 146 x 70,hollow 1.5 mm wall
+shell_jolly_left.stl,0,1,PLA,yes - hood peak and hem rim (tree supports),126 x 144 x 72,hollow 1.5 mm wall
+shell_jolly_right.stl,0,1,PLA,yes - hood peak and hem rim (tree supports),126 x 144 x 72,hollow 1.5 mm wall
+cloud_former_left.stl,0,1,PLA,yes - puffs and crown (tree supports),103 x 131 x 67,the cloud character's shell
+cloud_former_right.stl,0,1,PLA,yes - puffs and crown (tree supports),103 x 131 x 67,the cloud character's shell
+clip_beret.stl,0,1,PLA,yes - under the saucer,119 x 115 x 51,
+clip_glasses_round.stl,0,1,PLA,none,122 x 36 x 90,
+clip_sunglasses.stl,0,1,PLA,none,122 x 32 x 90,
+TOTAL pieces,22,122,,,,Option 1 about 550-630 g; Option 2 about 3 kg. 0.2 mm layers; 3 walls; 15-20% infill on structural parts.
