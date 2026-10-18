@@ -6,6 +6,9 @@ hooded Jolly) plus small clip-ons (beret, round glasses, sunglasses). Everything
 PLA or PETG, with no supports wherever that was possible. The source of truth is the Python file at the top of the
 project; change a number in its PARAMETERS block and re-run to get new STLs.
 
+The build spec (what the five toys are, what moves, electronics, voice, and what we would like printed) is in
+[docs/SPEC.md](docs/SPEC.md). The print-ready zip and the print-quantities sheet are on the Releases page.
+
 Status: designed and checked on screen only. Nothing has been printed or test-fitted yet (there is no printer to hand),
 so every fit number marked (CHECK) is a best guess for common hobby servos and bearings. Measure yours first (see
 "Check before you print").
