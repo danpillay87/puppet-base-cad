@@ -6,8 +6,9 @@ What this is
 Six small desk animatronics (one yeti with arms, five round characters) that all
 sit on the same 3D-printed base. The base turns, bobs up and down, and the head
 nods and tilts. A magnet ring at the neck lets the character shells click on and off.
-What they look like (this picture shows the first five; the sixth, Claude, is the
-coral starburst with seven soft rays, see docs/images/06-six-toys-concept.png in the repo):
+What they look like (this picture shows the first five; the sixth, Claude, is Clawd, the
+Claude Code mascot: a boxy terracotta body with two stub arms and four soft fleece legs,
+see docs/images/06-six-toys-concept.png in the repo):
 https://d8j0ntlcm91z4.cloudfront.net/user_3ElkytIwAZasEJ6yWmCzklZkS3B/hf_20261017_140641_e573edb6-a83d-4693-99ff-e605dbf3bbe1.png
 
 36 STL files. All are watertight and already in their print orientation, so load
@@ -56,9 +57,9 @@ shell_frog_left / right     100 x 132 x 71   supports on eye domes and cheeks
 shell_heart_left / right    107 x 132 x 67   supports on both lobes
 shell_pear_left / right     127 x 146 x 70   supports on the crown and the stalk
 shell_jolly_left / right    126 x 144 x 72   supports on the hood peak, flank slots and hem rim
-shell_claude_left / right   130 x 132 x 93   supports on the two 38-degree rays, the arch over the top ray
-                                             and the dome crown (pair about 109 g; the 75 and 108 degree
-                                             rays stand up nearly vertical when printed)
+shell_claude_left / right   110 x 130 x 98   supports on the flat roof (inside of the outer side wall)
+                                             and the arm ends (pair about 109 g; thin 1.0 mm wall, use a
+                                             brim; Clawd's four legs are soft fleece, not printed)
 (cloud shell = cloud_former_left / right in Group 1)
 
 GROUP 3 - CLIP-ONS (one each, small)

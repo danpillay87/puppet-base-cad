@@ -61,16 +61,30 @@ BERET_RXY, BERET_RZ = 54.0, 14.0              # saucer radius / half thickness
 BERET_CZ = 54.0                               # saucer centre height above the head centre
 BERET_DX = 7.0                                # sideways offset (a beret sits off-centre)
 
-# Claude (puffy starburst: seven soft rays in the front XZ plane, radiating from the head-sphere centre)
-CLAUDE_RAYS = [                               # (angle from vertical in the front view, + = toward +x ; reach = tip-sphere centre distance from the head-sphere centre)
-    (0.0, 89.0),                              # reaches are pulled in by the tip-radius growth (8 -> 14 mm) so the overall size stays 186 x 127 mm
-    (38.0, 84.0), (-38.0, 84.0),
-    (75.0, 82.0), (-75.0, 82.0),
-    (108.0, 74.0), (-108.0, 74.0),            # these two point a little below horizontal; the mating plane cuts their undersides flat
-]
-CLAUDE_ROOT_R = 19.0                          # ray radius where it leaves the head sphere (tapers linearly to the tip radius): stubby plush fingers
-CLAUDE_TIP_R = 14.0                           # radius of the tip, a full hemisphere (sphere centred on the end of the cone)
-CLAUDE_S0 = 30.0                              # the ray cone starts this far from the head-sphere centre (hidden inside the head blob)
+# Claude = "Clawd", the Claude Code mascot made plush: a chunky rounded-cube body, two short stub arms sticking out sideways at
+# mid height, and four stubby legs underneath. The body and the arms are the printed shell. The four legs are NOT printed: they are
+# soft stuffed fleece tubes sewn to the skin (see CLAWD_LEG_* and clawd_soft_legs, which is only drawn in the preview pictures),
+# because printed legs hang straight down into the neck gimbal and the column when the head nods and tilts (check_shell_clearance.py).
+CLAWD_WALL = 1.0                              # thinner than the 1.5 mm of the round shells, on purpose: a cube round the 120 mm head sphere has far
+                                              # more skin than a sphere. Measured shell pair (near-solid): 1.5 mm = 154.9 g (head 277 g, over the
+                                              # 250 g budget), 1.2 mm = 127.5 g (head 250 g, no margin), 1.0 mm = 109 g (head 231 g)
+CLAWD_W = 126.0                               # body width (x). The head cavity (R 61.8) plus this wall needs at least 125.6
+CLAWD_D = 130.0                               # body depth (y). Same minimum, plus room for the M3 lugs at the front and back seam
+CLAWD_H = 110.0                               # body height, from the underside of the mating plate (ZF) up
+CLAWD_R_VERT = 18.0                           # rounded vertical edges
+CLAWD_R_TOP = 16.0                            # rounded top edges (a little under the vertical radius so the corners blend)
+CLAWD_R_BOT = 8.0                             # bottom edges: small, the six magnet pockets (radius 54 mm) need a flat floor out to 56
+CLAWD_ARM_LEN = 35.0                          # how far each stub arm sticks out of the flat side face
+CLAWD_ARM_D = 40.0                            # arm thickness front to back (y)
+CLAWD_ARM_H = 37.0                            # arm height: about a third of the body
+CLAWD_ARM_R = 12.0                            # rounded arm edges and end
+CLAWD_ARM_ROOT = 25.0                         # the arm block starts this far inside the side face (buried in the body)
+CLAWD_PLATE_R = 58.0                          # the solid 3.2 mm mating plate is only a ring out to this radius; outside it the floor is a plain wall
+CLAWD_LUG_YB = 64.8                           # lug blocks stop just inside the front/back wall (outer face at 65.0), so nothing pokes out
+CLAWD_LEG_N, CLAWD_LEG_W, CLAWD_LEG_D = 4, 22.0, 30.0   # soft legs (preview only): count, width (x), depth (y)
+CLAWD_LEG_LEN = 28.0                          # how far they hang below the underside of the plate
+CLAWD_LEG_EDGE = 58.0                         # outer edge of the outer legs, inside the 63 mm half width of the body
+CLAWD_LEG_R = 9.0
 
 # =====================================================================================
 # shell builder
@@ -112,25 +126,34 @@ def shell_halves(blobs, **kw):
     return left, right
 
 
-def shell_full_solid(outer, cav, zmin=ZF, extra_cuts=(), extra_add=()):
+def shell_full_solid(outer, cav, zmin=ZF, extra_cuts=(), extra_add=(), plate_r=None, lug_yb=None):
     """Variant of shell_full for shapes that are not a plain union of spheroids (shell_full itself is untouched).
     outer = the finished outer solid, cav = the finished cavity solid (the outer shape shrunk by the wall; the Ø123.6 head
     cavity is added here). Everything after that is the same recipe as shell_full: cut off at zmin, solid 3.2 mm mating
     plate taken from the outer shape (Ø96 hole, six magnet pockets opening downward) and an M3 lug block at the front and
-    back seam."""
+    back seam.
+    plate_r (default none) limits the thick plate to a ring out to that radius; the floor outside it is then just the shell
+    wall (a wide flat-bottomed shape would otherwise carry a 3.2 mm slab across its whole footprint).
+    lug_yb (default max(plate edge + 6, 66)) is the y where the two lug blocks stop: the outer face of a flat front/back wall.
+    When lug_yb is given the blocks are also trimmed to the outer shape, so they cannot poke out through a rounded bottom edge."""
     cav = cav.union(cq.Workplane("XY").sphere(B.SHELL_CAV_R).translate((0, 0, ZC)))
     body = outer.cut(cav).intersect(B.box(-300, 300, -300, 300, zmin, 400))
     plate = outer.intersect(B.box(-300, 300, -300, 300, ZF, 0.0)).cut(B.cylz(0, 0, ZF - 1, 1, B.COLLAR_ID / 2))
+    if plate_r is not None:
+        plate = plate.intersect(B.cylz(0, 0, ZF - 1, 1, plate_r))
     shell = body.union(plate)
     for e in extra_add:
         shell = shell.union(e)
     yo = plate.val().BoundingBox().ymax
-    yb = max(yo + 6.0, 66.0)
+    yb = lug_yb if lug_yb is not None else max(yo + 6.0, 66.0)
     for sy in (-1, 1):
         ya, yz = sorted((sy * (yo - 3.0), sy * yb))
-        shell = shell.union(B.box(-8.0, 8.0, ya, yz, ZF, 0.0))
+        low = B.box(-8.0, 8.0, ya, yz, ZF, 0.0)
         ya, yz = sorted((sy * LUG_Y0, sy * yb))
-        shell = shell.union(B.box(-8.0, 8.0, ya, yz, -0.01, LUG_Z_TOP))
+        up = B.box(-8.0, 8.0, ya, yz, -0.01, LUG_Z_TOP)
+        if lug_yb is not None:
+            low, up = low.intersect(outer), up.intersect(outer)
+        shell = shell.union(low).union(up)
     tools = list(B.magnet_pockets(ZF, B.MAG_POCKET_DEPTH, -1)) + list(extra_cuts)
     return B.cut_all(shell, tools)
 
@@ -145,29 +168,56 @@ def shell_halves_solid(outer, cav, **kw):
     return left, right
 
 
-def claude_ray(angle_deg, reach, inset=0.0):
-    """One soft ray: a cone frustum from CLAUDE_S0 out to the tip-sphere centre plus the tip sphere, in the XZ plane, `angle_deg`
-    from vertical (+ toward +x), starting at the head-sphere centre. The radius is CLAUDE_ROOT_R where the ray leaves the head
-    blob (distance R0) and CLAUDE_TIP_R at the tip. inset > 0 shrinks every radius (used for the cavity: inset = wall)."""
-    a = math.radians(angle_deg)
-    d = cq.Vector(math.sin(a), 0.0, math.cos(a))
-    c = cq.Vector(0.0, 0.0, ZC)
-    slope = (CLAUDE_TIP_R - CLAUDE_ROOT_R) / (reach - R0)
-    r_start = CLAUDE_ROOT_R + slope * (CLAUDE_S0 - R0)
-    cone = cq.Workplane("XY").add(cq.Solid.makeCone(r_start - inset, CLAUDE_TIP_R - inset, reach - CLAUDE_S0,
-                                                    c + d * CLAUDE_S0, d))
-    tip = cq.Workplane("XY").sphere(CLAUDE_TIP_R - inset).translate((c + d * reach).toTuple())
-    return cone.union(tip)
+def rounded_box(x0, x1, y0, y1, z0, z1, r_vert, r_top, r_bot):
+    """Box with its four vertical edges, its top edges and its bottom edges rounded (radii r_vert, r_top, r_bot; 0 = sharp)."""
+    b = B.box(x0, x1, y0, y1, z0, z1)
+    if r_vert > 0:
+        b = b.edges("|Z").fillet(r_vert)
+    if r_top > 0:
+        b = b.faces(">Z").edges().fillet(r_top)
+    if r_bot > 0:
+        b = b.faces("<Z").edges().fillet(r_bot)
+    return b
 
 
-def claude_solids(wall=SHELL_WALL):
-    """(outer, cavity) of the Claude starburst: the head-swallowing sphere R0 plus seven rays; the cavity is the same
-    primitives shrunk by the wall."""
-    ctr = (0, 0, ZC)
-    outer = B.union_all([cq.Workplane("XY").sphere(R0).translate(ctr)] + [claude_ray(a, r) for a, r in CLAUDE_RAYS])
-    cav = B.union_all([cq.Workplane("XY").sphere(R0 - wall).translate(ctr)]
-                      + [claude_ray(a, r, inset=wall) for a, r in CLAUDE_RAYS])
+def clawd_zmid():
+    """Height of the middle of the body (head frame): where the two stub arms are centred."""
+    return ZF + CLAWD_H / 2.0
+
+
+def clawd_arm(sign, inset=0.0):
+    """One stub arm: a rounded block sticking straight out sideways (sign = +1 right, -1 left) from the middle height of the body.
+    It starts CLAWD_ARM_ROOT inside the side face so it fuses with the body. inset > 0 shrinks it by the wall (used for the cavity)."""
+    x_in = CLAWD_W / 2 - CLAWD_ARM_ROOT
+    x_out = CLAWD_W / 2 + CLAWD_ARM_LEN - inset
+    zm, hd, hh = clawd_zmid(), CLAWD_ARM_D / 2 - inset, CLAWD_ARM_H / 2 - inset
+    blk = B.box(x_in, x_out, -hd, hd, zm - hh, zm + hh).edges().fillet(CLAWD_ARM_R - inset)
+    return blk if sign > 0 else blk.mirror("YZ")
+
+
+def clawd_solids(wall=CLAWD_WALL):
+    """(outer, cavity) of Clawd: the rounded-cube body plus the two stub arms; the cavity is the same shapes shrunk by the wall
+    (so the arms are hollow and open into the body). The head sphere cavity is added in shell_full_solid."""
+    hw, hd = CLAWD_W / 2, CLAWD_D / 2
+    z0, z1 = ZF, ZF + CLAWD_H
+    body = rounded_box(-hw, hw, -hd, hd, z0, z1, CLAWD_R_VERT, CLAWD_R_TOP, CLAWD_R_BOT)
+    body_c = rounded_box(-hw + wall, hw - wall, -hd + wall, hd - wall, z0 + wall, z1 - wall,
+                         CLAWD_R_VERT - wall, CLAWD_R_TOP - wall, CLAWD_R_BOT - wall)
+    outer = B.union_all([body] + [clawd_arm(s) for s in (-1, 1)])
+    cav = B.union_all([body_c] + [clawd_arm(s, inset=wall) for s in (-1, 1)])
     return outer, cav
+
+
+def clawd_soft_legs():
+    """The four soft stuffed fleece legs, drawn for the preview pictures only (NOT printed, not part of any STL in out/ except
+    the coarse preview copy): CLAWD_LEG_N rounded blocks in a row across the middle of the depth, evenly spaced, the outer edges of
+    the outer pair at +/-CLAWD_LEG_EDGE, hanging CLAWD_LEG_LEN below the underside of the mating plate. Head frame."""
+    n, w = CLAWD_LEG_N, CLAWD_LEG_W
+    c_out = CLAWD_LEG_EDGE - w / 2
+    xs = [-c_out + i * (2 * c_out) / (n - 1) for i in range(n)]
+    legs = [B.box(x - w / 2, x + w / 2, -CLAWD_LEG_D / 2, CLAWD_LEG_D / 2, ZF - CLAWD_LEG_LEN, ZF + 6.0)
+            .faces("<Z").edges().fillet(CLAWD_LEG_R) for x in xs]
+    return B.union_all(legs)
 
 
 def pear_blobs():
@@ -246,8 +296,8 @@ def build_jolly():
 
 
 def build_claude():
-    outer, cav = claude_solids()
-    return shell_halves_solid(outer, cav)
+    outer, cav = clawd_solids()
+    return shell_halves_solid(outer, cav, plate_r=CLAWD_PLATE_R, lug_yb=CLAWD_LUG_YB)
 
 
 # =====================================================================================
@@ -328,7 +378,7 @@ SUPPORT_NOTES = {
     "frog": "YES: eye domes and cheeks; tree supports (lies on its split face)",
     "heart": "YES: both lobes; tree supports (lies on its split face)",
     "jolly": "YES: hood peak, shoulder flank slots and the rim of the open hem; tree supports (lies on its split face)",
-    "claude": "YES: the two 38-degree rays (about 50 degrees off vertical when printed), the arch over the top ray and the dome crown; the 75 and 108 degree rays stand up nearly vertical; tree supports (lies on its split face)",
+    "claude": "YES: the flat roof of the body (the inside of the outer side wall) and the flat end of each stub arm, plus the rounded top and bottom edges; tree supports (lies on its split face). 1.0 mm wall",
     "beret": "YES: underside of the saucer (print crown-down on the stalk with tree supports, or rim-down with supports under the saucer)",
     "glasses": "none (front face down: rims flat, temple arcs stand up as thin walls)",
     "sunglasses": "none (front face down: lens plates flat, temple arcs stand up as thin walls)",
@@ -423,6 +473,8 @@ def main(selected=None, preview=True, build=True):
     # coarse head-frame STLs for the preview
     for key, wp in posed.items():
         B.export_stl(wp, os.path.join(asm, key + ".stl"), tol=0.12, ang=0.35)
+    if "claude" in posed:                                   # preview only: Clawd's soft legs are not printed
+        B.export_stl(clawd_soft_legs(), os.path.join(asm, "claude_legs.stl"), tol=0.12, ang=0.35)
     if preview:
         render_preview(head_full)
 
@@ -433,8 +485,9 @@ def main(selected=None, preview=True, build=True):
 PREVIEW_COLORS = {
     "cloud": (0.80, 0.90, 1.00), "pear": (0.62, 0.80, 0.35), "frog": (0.35, 0.72, 0.40), "heart": (0.95, 0.45, 0.55),
     "jolly": (0.90, 0.92, 0.96), "claude": (0.85, 0.47, 0.34), "beret": (0.75, 0.25, 0.30), "glasses": (0.15, 0.15, 0.18), "sunglasses": (0.10, 0.10, 0.12),
-    "head": (0.96, 0.90, 0.78),
+    "head": (0.96, 0.90, 0.78), "softlegs": (0.85, 0.47, 0.34),
 }
+PREVIEW_OPACITY = {"softlegs": 0.45}                        # Clawd's four legs are sewn fleece, not printed: drawn see-through
 
 
 def render_preview(head_full):
@@ -451,10 +504,12 @@ def render_preview(head_full):
     row1 = [("cloud", cloud_L.union(cloud_R)), ("pear", None), ("frog", None), ("heart", None), ("jolly", None),
             ("claude", None)]
     asm = os.path.join(out, "_assembly", "_shells")
-    step = 190.0                                            # six shells, the starburst is 186 mm wide
+    step = 205.0                                            # six shells; Clawd with its stub arms is 196 mm wide, so the step is a little wider than it
     x = 2.5 * step                                          # seen from the front +X is on the left of the picture
     for key, wp in row1:
         items.append((key, wp, key, x, 0.0, os.path.join(asm, key + ".stl")))
+        if key == "claude":                                 # the four soft (sewn, not printed) legs, drawn see-through under the body
+            items.append(("claude_legs", None, "softlegs", x, 0.0, os.path.join(asm, "claude_legs.stl")))
         x -= step
     row2 = [("beret", "beret"), ("glasses", "glasses"), ("sunglasses", "sunglasses")]
     x = 175.0
@@ -494,13 +549,15 @@ def render_preview(head_full):
         a = vtk.vtkActor()
         a.SetMapper(mp)
         a.GetProperty().SetColor(*PREVIEW_COLORS[ck])
+        a.GetProperty().SetOpacity(PREVIEW_OPACITY.get(ck, 1.0))
         a.GetProperty().SetSpecular(0.25)
         ren.AddActor(a)
     txt = vtk.vtkTextActor()
-    txt.SetInput("Top: cloud, pear, frog, heart, hooded Jolly, starburst Claude shells.   Bottom: beret, round glasses, sunglasses on the bare head.")
+    txt.SetInput("Top: cloud, pear, frog, heart, hooded Jolly, Clawd (Claude) shells.   Bottom: beret, round glasses, sunglasses on the bare head.\n"
+                 "Clawd's four legs are soft sewn fleece, not printed, so they are drawn see-through.")
     txt.GetTextProperty().SetFontSize(24)
     txt.GetTextProperty().SetColor(0.1, 0.1, 0.15)
-    txt.SetPosition(20, 960)
+    txt.SetPosition(20, 925)
     ren.AddViewProp(txt)
     win = vtk.vtkRenderWindow()
     win.SetOffScreenRendering(1)

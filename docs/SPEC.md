@@ -1,6 +1,6 @@
 # Six controllable toys: build spec
 
-17 Oct 2026, Dan. Rev 15, exported 18 Oct 2026 as a backup of the working spec. Rev 16, 20 Oct: Claude added as a sixth toy, with a six-toy parts and materials costing. Images are in docs/images.
+17 Oct 2026, Dan. Rev 15, exported 18 Oct 2026 as a backup of the working spec. Rev 16, 20 Oct: Claude added as a sixth toy, with a six-toy parts and materials costing. Rev 17, 20 Oct evening: Claude redrawn as Clawd, the Claude Code mascot. Images are in docs/images.
 
 Five Wi-Fi animatronic toys on one shared servo base: one Jolly (Meta's plush yeti, a body with arms) and four OpenAI dots (fuzzy blobs, built as motorised bobblehead bodies with no arms). Everything is printed, base and character shells alike, with fur or fleece glued over for the fuzzy look. Each toy carries its own ESP32; one MCP server we write drives all five, so an AI agent can turn, nod, bounce or wave any of them by name. Budget: about £250 all-in for the five. This page is for Cromwell: what the toys are, what moves, and what we would like printed.
 
@@ -19,19 +19,19 @@ All five share one printed base. Jolly adds an arms module; the dots are bobbleh
 | 3 | Dot: pear | Yellow pear or rounded triangle with glasses | Bobblehead body | No | Eyes, bounce and squash, lean |
 | 4 | Dot: frog | Green rounded frog blob | Bobblehead body | No | Eyes, bounce and squash, lean |
 | 5 | Dot: heart | Pink heart with sunglasses | Bobblehead body | No | Eyes, bounce and squash, lean |
-| 6 | Claude (added 20 Oct) | Coral fuzzy starburst, Claude's spark logo made plush: round body, seven soft rays, dot eyes, no mouth, no accessory | Bobblehead body | No | Eyes, bounce and squash, lean |
+| 6 | Claude (added 20 Oct) | Clawd, the Claude Code mascot, as a terracotta fleece plush: boxy body, two stub arms out to the sides, four stubby legs, dot eyes, no mouth | Bobblehead body | No (stub arms are fixed) | Eyes, bounce and squash, lean |
 
 Target size: 30 to 35 cm tall for Jolly, about 25 cm tall and wide for each dot. Neither character has a mouth, so there is no jaw mechanism. Jolly and the dots are Meta and OpenAI characters, and Claude is Anthropic's, so these are for personal and demo use only.
 
 ## Sixth toy: Claude (added 20 Oct)
 
-Claude joins as a sixth toy, built like the four dots: same base, no arms, its own ESP32 and supply. Only the shell and the fleece colour are new.
+Claude joins as a sixth toy, built like the four dots: same base, no moving arms, its own ESP32 and supply. Only the shell and the fleece are new.
 
-![Claude, concept render, 20 Oct](images/05-claude-character-concept.png)
+![Claude as Clawd, concept render, 20 Oct](images/05-claude-character-concept.png)
 
-*Claude, concept render, 20 Oct*
+*Claude as Clawd, concept render, 20 Oct*
 
-The shape is Claude's spark logo made plush: a round body with seven soft, rounded rays (one up, two diagonal up, two out to the sides, two angled down), uneven in length like the logo. Two black dot eyes, no mouth and no accessory, because the outline is the identity. The skin is coral or terracotta long-pile fleece (about #D97757) glued over the printed shell.
+The character is Clawd, the Claude Code mascot, made plush (changed on the evening of 20 Oct from an earlier starburst design based on Claude's spark logo). It has a chunky rounded box body, two short stub arms sticking straight out at the sides, and four stubby legs underneath. It has two black bead eyes, no mouth and no accessory, because the outline is the identity. The arms are fixed, part of the printed shell. The skin is short terracotta anti-pill fleece (about #C96A4A) glued over the shell, not long-pile fur, so the boxy edges stay crisp.
 
 ![All six on the desk, concept render, 20 Oct](images/06-six-toys-concept.png)
 
@@ -39,16 +39,18 @@ The shape is Claude's spark logo made plush: a round body with seven soft, round
 
 In software it is unit 6: the same moves as a dot, and `toy.all` includes it.
 
-![CAD preview: Claude's shell on the base, at rest, then bobbed up 34 mm with 20 degrees of nod and tilt](images/07-claude-cad-preview.png)
+![CAD preview: Clawd's shell on the base, at rest, then bobbed up 34 mm with 20 degrees of nod and tilt; the see-through legs are soft fleece](images/07-claude-cad-preview.png)
 
-*CAD preview: Claude's shell on the base, at rest, then bobbed up 34 mm with 20 degrees of nod and tilt*
+*CAD preview: Clawd's shell on the base, at rest, then bobbed up 34 mm with 20 degrees of nod and tilt; the see-through legs are soft fleece*
 
-**CAD (20 Oct):** the Claude shell is drawn and exported as two STL halves, `shell_claude_left` and `shell_claude_right`, bringing the set to 36 STLs. It is a sphere over the head with seven fat, round-tipped rays, 19 mm thick at the root and 14 mm at the tip, at 0, ±38, ±75 and ±108 degrees from vertical.
+**CAD (20 Oct, redrawn as Clawd):** the Claude shell is exported as two STL halves, `shell_claude_left` and `shell_claude_right` (36 STLs in the set). It is a rounded box over the head with a hollow stub arm on each side. The four legs are soft sewn fleece on the skin, not printed.
 
-- Size: 186 mm wide, 132 mm deep, 127 mm above the collar. Each half prints at 130 × 132 × 93 mm, so it fits the A1 mini.
-- Weight: the pair is about 109 g printed near-solid, about 27 g at normal shell settings. Worst case, the head comes to about 231 g against the 250 g budget, just under Jolly's 233 g.
-- Fit: it does not touch the head sphere, and it clears the base by at least 10.6 mm at full nod and full tilt, bobbed up or down.
-- Printing: tree supports on the diagonal rays and the crown, where about 11% of the surface overhangs.
+- Size: 196 mm wide across the arms, 130 mm deep and 110 mm tall. The body is 126 × 130 × 110 mm with rounded edges. Each arm sticks out 35 mm and is 37 mm tall. The four legs are 22 × 30 mm and hang 28 mm below. Each half prints at 110 × 130 × 98 mm, so it fits the A1 mini.
+- Wall: 1.0 mm, not the usual 1.5 mm. A box round the 120 mm head has much more surface than a sphere, so 1.5 mm walls take the head to about 277 g, over the 250 g budget. At 1.0 mm the pair is about 109 g near-solid, 27 g at normal shell settings, and the head is about 231 g, just under Jolly's 233 g. Use a brim and expect the first print to be fragile.
+- Why soft legs: printed legs ended within 0 to 7 mm of the neck at full nod and tilt, and they would add about 18 g.
+- Fit: the shell clears the base by at least 10.6 mm at full nod and full tilt, bobbed up or down.
+- Leg check: the soft legs can still brush the neck gimbal. The outer pair is 5 mm clear at rest and touches at full nod and tilt. The inner pair sits over the neck at full length. Stuff them lightly, or make the inner two short flat pads, and test with real fleece.
+- Printing: tree supports, about 15% of the surface overhangs (Jolly 15.8%). The roof, the arm ends and the rounded edges need them.
 
 Not test-printed yet; the clearances are CAD distances with no allowance for print tolerance.
 
@@ -91,7 +93,7 @@ Every character is a hollow printed shell that clips over the head sphere and to
 | Pear | Pear or rounded-triangle shell, glasses printed as a clip-on | Yellow fleece or flock | about 180 g |
 | Frog | Rounded frog shell with eye bumps | Green fleece or flock | about 200 g |
 | Heart | Heart shell, sunglasses printed as a clip-on | Pink fleece or flock | about 200 g |
-| Claude | Starburst shell in two halves: sphere with seven fat round-tipped rays | Coral or terracotta long-pile fleece | about 110 g |
+| Claude (Clawd) | Rounded box shell in two halves with two hollow stub arms, 1.0 mm wall; four soft sewn fleece legs | Short terracotta anti-pill fleece, black bead eyes | about 110 g |
 
 Shell rules: 1.5 mm walls (two perimeters), 0 to 5% infill, no supports where possible. That puts a Ø120 mm head shell at about 70 to 80 g before fabric, well inside the 250 g head budget. Eyes are printed white discs with black pupils glued on; the same pockets take LED matrices later.
 
@@ -143,16 +145,16 @@ Live UK prices on 20 Oct 2026, free delivery, everything arriving 22 to 29 Oct. 
 | M2 to M5 screw and nut kit, spring assortment | 1 each | £10.79 | A B0GKGWVQNF, A B07WFPPXXX |
 | Jumper wires, 20 servo extension leads | 1 kit, 2 packs | £20.97 | A B0BZ7PYYLB, A B08727XZBQ |
 | PLA+ filament | 4.4 kg | £31.44 | A B0GTLQ31W1 |
-| Long-pile faux fur, six colours at 50 × 180 cm, plus a glue gun | 6 + 1 | £60.73 | A B0FB9CNYR7, A B0DDKG29ND |
-| **Total** |  | **£345.59** | about £58 a toy |
+| Long-pile faux fur, five colours at 50 × 180 cm (£8.99 each); terracotta anti-pill fleece for Clawd, 1 m × 150 cm; glue gun | 5 + 1 + 1 | £57.74 | A B0FB9CNYR7, A B0CVLJB56L, A B0DDKG29ND |
+| **Total** |  | **£342.60** | about £57 a toy |
 
-Optional: one PCA9685 servo board per toy adds £25.62 (A B0D7RQ5JXY), making £371.21. The lean build drives the servos straight from the ESP32, so these are only for tidier wiring.
+Optional: one PCA9685 servo board per toy adds £25.62 (A B0D7RQ5JXY), making £368.22. The lean build drives the servos straight from the ESP32, so these are only for tidier wiring.
 
 **Against Cromwell's £70 list:** his list is per toy, so £420 for six, and it has three gaps. It has four servos, but Jolly needs six. It has two PCA9685 boards per toy, but one board drives 16 servos and the lean build needs none. It has no fur or fleece. The basket above is cheaper and complete. His £200 fee covers Stage 1, one working Jolly, only.
 
 Checks before ordering:
 
-- Fur: there is no exact Claude coral. The nearest are "Peach Red" and "Shallow Orange", so check the swatch. The other five colours exist: cream, sky blue, yellow, light green and pink.
+- Fur: Clawd takes short terracotta fleece, not the long-pile fur. The listing is called "Terracotta" but shows no true swatch, so check it against #C96A4A (Neotrims "Rust Brick", A B07HWYN213, £8.25, is the fallback). The other five long-pile colours exist: cream, sky blue, yellow, light green and pink. The fur arrives last, on 29 Oct.
 - Magnets: the 100-pack does not state its grade. Confirmed N35 costs £19.98 for 2 × 50 (A B00TACMMP0).
 - One shared supply instead of six: not recommended. Six toys' servos at stall can draw more than a barrel splitter carries.
 - Genuine TowerPro MG996R are £9 each at The Pi Hut, £126 for 14. The cheap servos and ESP32s are unbranded clones, which is normal for this kind of build.

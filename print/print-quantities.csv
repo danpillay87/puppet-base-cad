@@ -28,8 +28,8 @@ shell_pear_left.stl,0,1,PLA,yes - crown and stalk (tree supports),127 x 146 x 70
 shell_pear_right.stl,0,1,PLA,yes - crown and stalk (tree supports),127 x 146 x 70,hollow 1.5 mm wall
 shell_jolly_left.stl,0,1,PLA,yes - hood peak and hem rim (tree supports),126 x 144 x 72,hollow 1.5 mm wall
 shell_jolly_right.stl,0,1,PLA,yes - hood peak and hem rim (tree supports),126 x 144 x 72,hollow 1.5 mm wall
-shell_claude_left.stl,0,1,PLA,"yes - the two 38-degree rays, the arch over the top ray and the dome crown (tree supports)",130 x 132 x 93,"hollow 1.5 mm wall; starburst Claude shell, pair about 109 g"
-shell_claude_right.stl,0,1,PLA,"yes - the two 38-degree rays, the arch over the top ray and the dome crown (tree supports)",130 x 132 x 93,hollow 1.5 mm wall
+shell_claude_left.stl,0,1,PLA,yes - the flat roof (inside of the outer side wall) and the arm ends (tree supports),110 x 130 x 98,"hollow 1.0 mm wall (thinner than the other shells; two perimeters, brim); Clawd (Claude) shell, pair about 109 g; the four legs are soft fleece, not printed"
+shell_claude_right.stl,0,1,PLA,yes - the flat roof (inside of the outer side wall) and the arm ends (tree supports),110 x 130 x 98,hollow 1.0 mm wall
 cloud_former_left.stl,0,1,PLA,yes - puffs and crown (tree supports),103 x 131 x 67,the cloud character's shell
 cloud_former_right.stl,0,1,PLA,yes - puffs and crown (tree supports),103 x 131 x 67,the cloud character's shell
 clip_beret.stl,0,1,PLA,yes - under the saucer,119 x 115 x 51,
