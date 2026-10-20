@@ -1,15 +1,16 @@
-DESK ANIMATRONICS - PRINT PACK (18 Oct 2026)
+DESK ANIMATRONICS - PRINT PACK (20 Oct 2026)
 ===========================================
 
 What this is
 ------------
-Five small desk animatronics (one yeti with arms, four round characters) that all
+Six small desk animatronics (one yeti with arms, five round characters) that all
 sit on the same 3D-printed base. The base turns, bobs up and down, and the head
 nods and tilts. A magnet ring at the neck lets the character shells click on and off.
-What they look like:
+What they look like (this picture shows the first five; the sixth, Claude, is the
+coral starburst with seven soft rays, see docs/images/06-six-toys-concept.png in the repo):
 https://d8j0ntlcm91z4.cloudfront.net/user_3ElkytIwAZasEJ6yWmCzklZkS3B/hf_20261017_140641_e573edb6-a83d-4693-99ff-e605dbf3bbe1.png
 
-34 STL files. All are watertight and already in their print orientation, so load
+36 STL files. All are watertight and already in their print orientation, so load
 them as they are. Everything fits a 180 mm bed. Nothing has been printed yet, so
 the servo and bearing pockets are from datasheets: please print neck_base_A and
 one shoulder_socket first and I will check the fit before the rest goes on.
@@ -41,7 +42,7 @@ head_half_left            1    84 x 122 x 61    YES, crown of the dome and the c
 head_half_right           1    84 x 122 x 61    YES, crown of the dome and the collar flange
 shoulder_socket_left      1    20 x 36 x 23     none
 shoulder_socket_right     1    20 x 36 x 23     none
-shoulder_cap              2    20 x 36 x 10     none  (blanks the shoulder on the four round characters)
+shoulder_cap              2    20 x 36 x 10     none  (blanks the shoulder on the five round characters)
 arm_horn                  2    34 x 20 x 9      none  (only needed for the yeti)
 skin_ring_1 to _4         1 each  110 x 110 x 3  none  (four flat rings, one per spare shell)
 cloud_former_left/right   1 each 103 x 131 x 67 YES, puffs and crown, tree supports
@@ -55,6 +56,9 @@ shell_frog_left / right     100 x 132 x 71   supports on eye domes and cheeks
 shell_heart_left / right    107 x 132 x 67   supports on both lobes
 shell_pear_left / right     127 x 146 x 70   supports on the crown and the stalk
 shell_jolly_left / right    126 x 144 x 72   supports on the hood peak, flank slots and hem rim
+shell_claude_left / right   130 x 132 x 93   supports on the two 38-degree rays, the arch over the top ray
+                                             and the dome crown (pair about 109 g; the 75 and 108 degree
+                                             rays stand up nearly vertical when printed)
 (cloud shell = cloud_former_left / right in Group 1)
 
 GROUP 3 - CLIP-ONS (one each, small)
@@ -66,7 +70,9 @@ clip_sunglasses       122 x 32 x 90    none, front face down
 Totals
 ------
 One toy = one base set + one shell pair, roughly 550-630 g.
-All five = five base sets + five shells + clip-ons, roughly 3 kg and 80-100 printer hours.
+All six = six base sets + six shells + clip-ons, roughly 3.5-4 kg and 95-120 printer hours
+(the four skin rings, the arm horns and the clip-ons are printed once, not per toy;
+10 shoulder caps in all, 2 for each of the five round characters).
 Suggested first print to prove it moves: one base set + the frog shell.
 
 Dan Pillay

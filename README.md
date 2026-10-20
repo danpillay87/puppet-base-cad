@@ -2,11 +2,11 @@
 
 A parametric, all-printed puppet body: a turntable that spins the whole puppet, a torso column that bobs up and down,
 a two-axis neck (nod and tilt), a 120 mm head sphere, and a family of clip-on character shells (cloud, pear, frog, heart,
-hooded Jolly) plus small clip-ons (beret, round glasses, sunglasses). Everything is designed for a home FDM printer in
+hooded Jolly, starburst Claude) plus small clip-ons (beret, round glasses, sunglasses). Everything is designed for a home FDM printer in
 PLA or PETG, with no supports wherever that was possible. The source of truth is the Python file at the top of the
 project; change a number in its PARAMETERS block and re-run to get new STLs.
 
-The build spec (what the five toys are, what moves, electronics, voice, and what we would like printed) is in
+The build spec (what the six toys are, what moves, electronics, voice, and what we would like printed) is in
 [docs/SPEC.md](docs/SPEC.md). The print-ready zip and the print-quantities sheet are on the Releases page.
 
 Status: designed and checked on screen only. Nothing has been printed or test-fitted yet (there is no printer to hand),
@@ -21,9 +21,11 @@ Built with CadQuery 2.8.0 (a Python wrapper around the OpenCASCADE CAD kernel) o
 |---|---|
 | `build_puppet_base.py` | Main source. PARAMETERS block at the top (all dimensions), then every base part, the assembly poses and the STL export. |
 | `build_shells.py` | The character shells and clip-ons. Its own PARAMETERS block at the top; it imports the base file for the shared dimensions. |
-| `render_preview.py` | Makes the assembly preview pictures. |
+| `check_shell_clearance.py` | Exact (CadQuery distance) clearance of a two-half shell against the base parts over the full nod and tilt range. |
+| `render_preview.py` | Makes the assembly preview pictures (`render_preview.py claude` makes only the Claude one). |
 | `out/*.stl` | One STL per part, already turned to its print orientation (lowest point at z = 0). Import and slice as-is. |
 | `out/parts_report.csv`, `out/shells_report.csv` | Size, volume, grams and support notes for every part. |
+| `out/shell_clearance.csv` | Smallest gap between a shell and the base parts, per pose (written by `check_shell_clearance.py`). |
 | `out/preview_*.png` | The pictures (see below). |
 | `out/_assembly/` | Coarse posed copies used only for the pictures. Do not print these. |
 | `out/_build_log.txt` | Console output of the last full base build. |
@@ -37,7 +39,8 @@ A matplotlib fallback is coded into `render_preview.py` but was not needed.
 - `out/preview_rest.png` - body at rest: carriage down, head level, arms down, no character shell.
 - `out/preview_bobbed_tilted.png` - bobbed up 33.9 mm, head nodded 20 degrees and tilted 20 degrees, arms raised 35 degrees.
 - `out/preview_with_cloud.png` - the example cloud shell on the head, at rest.
-- `out/preview_shells.png` - the five shells and three clip-ons side by side (front view).
+- `out/preview_shells.png` - the six shells and three clip-ons side by side (front view).
+- `out/preview_claude.png` - the Claude shell on the full base, seen from the front, two poses side by side: at rest, and bobbed up 33.9 mm with the head nodded 20 and tilted 20 degrees (no arms fitted).
 
 ## Key numbers
 
@@ -47,7 +50,7 @@ A matplotlib fallback is coded into `render_preview.py` but was not needed.
 - Shoulder arms swing plus and minus 80 degrees.
 - Collision check (head sphere and neck gimbal against the column, carriage and neck parts) over bob {0, max} x nod {-30, 0, +30} x tilt {-25, 0, +25}: worst overlap 0.0 mm3, method: boolean intersection volume in CadQuery.
 - Closest approaches in the neck gimbal (tight for a printer): rocker B to base A 0.50 mm, head plate C to rocker B 0.40 mm, head plate C to base A at least 3.2 mm.
-- Mesh check: all 34 STLs in `out/` are watertight with a consistent winding (checked with trimesh) and rest on z = 0. Twelve dome-shaped parts (head halves, shells) first came out of the CAD mesher with one to four zero-area triangles each; `clean_stl()` in `build_puppet_base.py` now removes them on export (volume unchanged).
+- Mesh check: all 36 STLs in `out/` are watertight with a consistent winding (checked with trimesh) and rest on z = 0. Twelve dome-shaped parts (head halves, shells) first came out of the CAD mesher with one to four zero-area triangles each; `clean_stl()` in `build_puppet_base.py` now removes them on export (volume unchanged).
 
 ## How it moves
 
@@ -118,7 +121,7 @@ Mechanics
 Magnets (5 mm diameter x 2 mm, N35)
 - 6 in the head collar (loaded from inside the head, before the halves are closed).
 - 6 per skin ring or shell you fit, loaded from underneath, opposite polarity to the head ones. Mark the polarity with a pen on all of them before loading.
-- All four skin rings: 24. All five shells (cloud, pear, frog, heart, Jolly): 30. Printing everything needs 60 magnets; the head plus the rings alone is 30. The beret, glasses and sunglasses need none (they grip the head sphere).
+- All four skin rings: 24. All six shells (cloud, pear, frog, heart, Jolly, Claude): 36. Printing everything needs 66 magnets; the head plus the rings alone is 30. The beret, glasses and sunglasses need none (they grip the head sphere).
 
 Screws (counts come from the holes in the CAD; use self-tapping into the printed pilot holes or tap them)
 - M3: 37 for the base set, in assorted lengths of 8 to 16 mm (a 200-piece M3 kit covers it), plus 6 M3 nuts for the column foot. Breakdown: base halves 2, bearing 6 (3 into the base, 3 into the turntable), column foot 6, column halves 6, yoke 2, spring anchor 1, stem cross-screws 2, shoulder sockets 4, neck pivots 2, head plate to head 4, head halves 2. Add 2 M3 for every character shell you print.
@@ -155,13 +158,14 @@ overlap with the head sphere.
 | `shell_frog_left/right` | 100 x 132 x 71 per half | 21.4 | 85.5 | yes: eye domes and cheeks |
 | `shell_heart_left/right` | 107 x 132 x 67 per half | 23.4 | 93.7 | yes: both lobes |
 | `shell_jolly_left/right` | 126 x 144 x 72 per half | 27.6 | 110.5 | yes: hood peak, flank slots, open hem rim |
+| `shell_claude_left/right` | 130 x 132 x 93 per half | 27.2 | 108.8 | yes: the two 38 degree rays, the arch over the top ray and the dome crown (tree supports); the 75 and 108 degree rays stand up nearly vertical |
 | `clip_beret` | 119 x 115 x 51 | 8.3 | 33.2 | yes: underside of the saucer (print crown-down on the stalk, or rim-down with supports under the saucer) |
 | `clip_glasses_round` | 122 x 36 x 90 | 1.8 | 7.3 | none: print front face down |
 | `clip_sunglasses` | 122 x 32 x 90 | 3.8 | 15.1 | none: print front face down |
 
 (The shell masses above are for the pair; sizes are per half. Rebuild them with
 `.venv\Scripts\python.exe build_shells.py` or just some of them with `build_shells.py pear jolly`; names are
-pear frog heart jolly beret glasses sunglasses.)
+pear frog heart jolly claude beret glasses sunglasses.)
 
 Jolly hem: raised to -26 mm below the collar plane (`JOLLY_HEM_Z` in `build_shells.py`, 17 Oct 2026; it was -58, then -40), so the shell is 126 mm tall instead of 158 mm (it was 158 x 144 x 72, 33.6 g and 134.4 g). At -58 the hem hit the column at rest beyond about 13 degrees of nod or 10 degrees of tilt; at -40 it still touched when full nod and full tilt were used together. -26 clears the full nod 30 plus tilt 25 corner at rest.
 
@@ -169,11 +173,15 @@ Head mass budget (spec: 250 g or the MG90D neck stalls). My estimate for what ha
 head halves and head plate C near-solid (122 g) plus the shell, before magnets, screws and any fabric:
 
 - Cloud 205 g, frog 208 g, heart 216 g, pear 225 g: inside the budget.
-- Jolly 233 g (122.3 g of head halves and plate C plus the 110.5 g shell pair; it was 257 g before the hem was raised to -26): inside the budget by about 17 g, but still the heaviest of the five. Magnets, screws and fabric add more, and the rocker B and tilt servo also ride on the nod servo. Test it with real weights, print the head halves and Jolly with a thinner wall (`HEAD_WALL` in the base file, `SHELL_WALL` here), or fit the Jolly only with a stronger neck servo.
+- Claude 231 g (122.3 g of head halves and plate C plus the 108.8 g shell pair): inside the budget by about 19 g, second heaviest, 2 g under the Jolly.
+- Jolly 233 g (122.3 g of head halves and plate C plus the 110.5 g shell pair; it was 257 g before the hem was raised to -26): inside the budget by about 17 g, but still the heaviest of the six. Magnets, screws and fabric add more, and the rocker B and tilt servo also ride on the nod servo. Test it with real weights, print the head halves and Jolly with a thinner wall (`HEAD_WALL` in the base file, `SHELL_WALL` here), or fit the Jolly only with a stronger neck servo.
 
 Notes on specific shells and clip-ons
 - Heart: the point is cut flat at the collar plane, because a shell that hangs lower would hit the neck gimbal. It reads as a heart from the top cleft and the two lobes, not from a pointed bottom.
-- Jolly: 126 mm tall hooded head-and-torso shell with a hood ridge and a swept cut-out on each shoulder flank for the mitten arms (cleared up to 80 degrees of arm swing). The hem is at -26 mm below the collar (raised from -58, then -40, on 17 Oct 2026), which is well above the shoulder sockets (those sit about 119 mm below the collar), so it hides the head and the top of the neck, not the shoulders or torso, and about 38 mm of the neck flange shows under the hem. The arm cut-outs are swept clearance slots, not tailored to the neck at every nod and tilt. Its wide hem swings down toward the top of the column when the head moves (measured by distance in CadQuery, no printing involved). Body at rest, hem at -26, worst case over nod plus or minus 30 and tilt plus or minus 25 including all four full corners: 4.2 mm gap (at the full corner). Single extremes at rest: full nod alone 14.6 mm, full tilt alone 15.8 mm. Earlier hems for comparison: at -58 it touched beyond about 13 degrees of nod or 10 degrees of tilt; at -40 nod alone and tilt alone cleared (5.5 and 2.1 mm) but the combined corner touched (0.0 mm); at -30 the corner gap was 1.9 mm. The cloud, pear, frog and heart shells stop at the collar plane, so they cannot reach the column.
+- Jolly: 126 mm tall hooded head-and-torso shell with a hood ridge and a swept cut-out on each shoulder flank for the mitten arms (cleared up to 80 degrees of arm swing). The hem is at -26 mm below the collar (raised from -58, then -40, on 17 Oct 2026), which is well above the shoulder sockets (those sit about 119 mm below the collar), so it hides the head and the top of the neck, not the shoulders or torso, and about 38 mm of the neck flange shows under the hem. The arm cut-outs are swept clearance slots, not tailored to the neck at every nod and tilt. Its wide hem swings down toward the top of the column when the head moves (measured by distance in CadQuery, no printing involved). Body at rest, hem at -26, worst case over nod plus or minus 30 and tilt plus or minus 25 including all four full corners: 4.2 mm gap (at the full corner). Single extremes at rest: full nod alone 14.6 mm, full tilt alone 15.8 mm. Earlier hems for comparison: at -58 it touched beyond about 13 degrees of nod or 10 degrees of tilt; at -40 nod alone and tilt alone cleared (5.5 and 2.1 mm) but the combined corner touched (0.0 mm); at -30 the corner gap was 1.9 mm. The cloud, pear, frog, heart and Claude shells stop at the collar plane, so they cannot reach the column.
+- Claude: a puffy starburst after Claude's spark logo. The shell is the same head-swallowing sphere as the other round shells (R 63.3 mm about the head-sphere centre) plus seven soft rays in the front (X-Z) plane, all pointing out from that centre. Angles from vertical 0, plus and minus 38, plus and minus 75, plus and minus 108 degrees; the tip-sphere centres are 89, 84, 82 and 74 mm out (so the rays are uneven in length, like the logo). Each ray is a short, fat cone frustum capped with a full hemisphere, root radius 19 mm tapering to a tip radius of 14 mm, so they read as stubby plush fingers, not spikes; hollow with the same 1.5 mm wall (`CLAUDE_RAYS`, `CLAUDE_ROOT_R`, `CLAUDE_TIP_R` in `build_shells.py`). (First version: 13 to 8 mm rays reaching 95, 90, 88 and 80 mm, 99 g; it looked like a spiky sea mine, so the rays were thickened and the reaches pulled in by the tip-radius growth to keep the same overall size.) Everything below the mating plane is cut flat and the standard mating plate (3.2 mm, 96 mm hole, six magnet pockets, two M3 lugs) closes it, so it fits the same base as the others. Whole shell 186 mm wide, 132 mm deep, 127 mm above the collar plane (a little over the 120 mm aim; the height costs no clearance). Valid solid per half, 0.0 mm3 overlap with the head. Built by `shell_full_solid` / `shell_halves_solid`, a variant of the shell recipe that takes any outer and cavity solid, so the other shells' code was not touched. The fleece skin on top will soften it further. The radii were tried at 19 / 14 first and the mass fits (108.8 g, under the 120 g limit), so the 18 / 13, 17 / 12 and 16 / 11 fall-backs were not needed.
+  Clearance (`check_shell_clearance.py`, exact CadQuery distance, shell moved with the head, arms not applicable on the round characters; the same method reproduces the Jolly's 4.2 mm corner gap above). Smallest gap to any base part, body at rest, nod / tilt in degrees: -30 / -25 12.0 mm; -30 / 0 15.4; -30 / +25 12.0; 0 / -25 10.6; 0 / 0 17.5; 0 / +25 10.6; +30 / -25 17.2; +30 / 0 17.5; +30 / +25 17.2. With the carriage fully up (bob 33.9 mm) the four corners give 12.0 mm (nod -30) and 17.2 mm (nod +30). Worst case 10.6 mm (collar plate to neck base A at tilt plus or minus 25), well over a 3 mm aim: the rays never come near the column or the turntable, because the shell ends at the collar plane. Shell to head plate C: 5.7 mm. These are CAD distances with no printing tolerance (CHECK on the printed parts).
+  Printing: lies on its split face, each half 130 x 132 x 93 mm (fits a 180 mm bed). About 10.9 percent of the surface is steeper than 45 degrees, mostly the two 38 degree rays (about 50 degrees off vertical when printed) and the arch over the top ray, so use tree supports there (CHECK in the slicer; not test-printed).
 - Glasses and sunglasses: they hold on with a springy temple hook, designed with about 0.5 to 1.1 mm of deliberate squeeze. This has not been tested on a printed head; if they are loose or crack, change the `G_*` and `SUN_*` numbers.
 - Beret: a plain friction fit (0.15 mm clearance), so it may slide when the head nods. A small dab of Blu-Tack on the inside fixes that.
 
@@ -181,7 +189,7 @@ Notes on specific shells and clip-ons
 
 1. Servo pocket fit. Calipers on your actual servos, then compare with the (CHECK) numbers in the PARAMETERS block: MG90D tab-top height 20.5 mm, ear hole spacing 27.8 mm, shaft offset 6.0 mm; MG996R tab-top height 28.0 mm, ear holes 49.5 x 10 mm, shaft offset 10.5 mm. Print the small `shoulder_socket_right` and `neck_base_A` first; they test the MG90D pocket. A MG996R pocket test is one half of the base plate (long print) or print only the turntable cradle.
 2. Magnet pocket tolerance. Pockets are 5.4 mm wide and 2.2 mm deep for a 5 x 2 mm magnet, leaving 0.8 mm of plastic skin on the mating face. Print one skin ring first and press a magnet in: it should seat firmly without splitting the skin. If tight or loose, change `CLEAR` or `MAG_D`.
-3. Head mass. See the budget above; the Jolly is the heaviest of the five (233 g against 250 g). Weigh the printed head halves and shell before choosing the final neck servo.
+3. Head mass. See the budget above; the Jolly is the heaviest of the six (233 g against 250 g; Claude is 231 g). Weigh the printed head halves and shell before choosing the final neck servo.
 4. Gimbal hinge gaps. 0.4 to 0.5 mm in the CAD is tight for FDM. If the hinges fuse or bind, raise `CLEAR` or sand the faces.
 5. Bearing numbers. The model assumes 38 mm hole, 7 mm tall, three screws on a 58 mm circle. Measure yours and change `BEARING_ID`, `BEARING_H`, `BEARING_SCREW_R`.
 6. Supports. The turntable plate needs supports under it; neck base A, head halves and all shell halves also do.
@@ -189,10 +197,10 @@ Notes on specific shells and clip-ons
 
 ## Known limits and what was skipped
 
-- Nothing has been physically printed or bench-tested. The collision check covers the head sphere, neck gimbal, column and carriage (the grid above) and, for the Jolly shell, a separate set of checks (below). It does not model servo bodies, wires or fabric.
+- Nothing has been physically printed or bench-tested. The collision check covers the head sphere, neck gimbal, column and carriage (the grid above) and, for the Jolly and Claude shells, a separate set of checks (below, and `check_shell_clearance.py`). It does not model servo bodies, wires or fabric.
 - The shell and cloud right-hand halves are built as a mirror of the left, because cutting a union of spheres straight down the middle upset the CAD kernel (it returned an invalid, near-empty solid). The mirror is exact; the lug holes are cut afterwards so left and right differ correctly (clearance holes on one, pilot holes on the other).
 - Magnet pockets are placed at 0, 60, 120... degrees so none lands on the split plane.
-- Nothing requested was skipped. Every part in the brief exists: base plate in two halves, turntable, torso column in two halves with the lift carriage, yoke and lever, three-part neck gimbal, head sphere in two halves with the 110 mm collar, four skin rings, two shoulder sockets with blanking caps and arm horns, the example cloud shell, the pear, frog, heart and Jolly shells, the beret, round glasses and sunglasses.
+- Nothing requested was skipped. Every part in the brief exists: base plate in two halves, turntable, torso column in two halves with the lift carriage, yoke and lever, three-part neck gimbal, head sphere in two halves with the 110 mm collar, four skin rings, two shoulder sockets with blanking caps and arm horns, the example cloud shell, the pear, frog, heart, Jolly and Claude shells, the beret, round glasses and sunglasses.
 
 ## Changing the design
 
@@ -202,4 +210,6 @@ collar 110, the servo sizes, the bearing size, the bob lever). Then, from this f
     $env:PYTHONIOENCODING='utf-8'
     .\.venv\Scripts\python.exe build_puppet_base.py       # all base parts, parts_report.csv, collision check (several minutes)
     .\.venv\Scripts\python.exe render_preview.py          # the preview pictures
-    .\.venv\Scripts\python.exe build_shells.py            # all shells and clip-ons (or name some: pear frog heart jolly beret glasses sunglasses)
+    .\.venv\Scripts\python.exe render_preview.py claude   # only out/preview_claude.png
+    .\.venv\Scripts\python.exe build_shells.py            # all shells and clip-ons (or name some: pear frog heart jolly claude beret glasses sunglasses)
+    .\.venv\Scripts\python.exe check_shell_clearance.py claude     # shell-to-base gaps over nod and tilt (add --bob for the carriage-up corners)

@@ -2,7 +2,7 @@ r"""
 Character shells and clip-on accessories for the universal puppet base (CadQuery).
 
 Run:  .venv\Scripts\python.exe build_shells.py              # build everything, write STLs + out/shells_report.csv + preview
-      .venv\Scripts\python.exe build_shells.py pear frog     # only some parts (names: pear frog heart jolly beret glasses sunglasses)
+      .venv\Scripts\python.exe build_shells.py pear frog     # only some parts (names: pear frog heart jolly claude beret glasses sunglasses)
       add --no-preview to skip the picture.
 
 This file only IMPORTS the geometry helpers and the head dimensions from build_puppet_base.py (it changes nothing there).
@@ -61,6 +61,17 @@ BERET_RXY, BERET_RZ = 54.0, 14.0              # saucer radius / half thickness
 BERET_CZ = 54.0                               # saucer centre height above the head centre
 BERET_DX = 7.0                                # sideways offset (a beret sits off-centre)
 
+# Claude (puffy starburst: seven soft rays in the front XZ plane, radiating from the head-sphere centre)
+CLAUDE_RAYS = [                               # (angle from vertical in the front view, + = toward +x ; reach = tip-sphere centre distance from the head-sphere centre)
+    (0.0, 89.0),                              # reaches are pulled in by the tip-radius growth (8 -> 14 mm) so the overall size stays 186 x 127 mm
+    (38.0, 84.0), (-38.0, 84.0),
+    (75.0, 82.0), (-75.0, 82.0),
+    (108.0, 74.0), (-108.0, 74.0),            # these two point a little below horizontal; the mating plane cuts their undersides flat
+]
+CLAUDE_ROOT_R = 19.0                          # ray radius where it leaves the head sphere (tapers linearly to the tip radius): stubby plush fingers
+CLAUDE_TIP_R = 14.0                           # radius of the tip, a full hemisphere (sphere centred on the end of the cone)
+CLAUDE_S0 = 30.0                              # the ray cone starts this far from the head-sphere centre (hidden inside the head blob)
+
 # =====================================================================================
 # shell builder
 # =====================================================================================
@@ -99,6 +110,64 @@ def shell_halves(blobs, **kw):
     left = B.cut_all(left0, [B.cylx(-9.0, 0.5, sy * LUG_HOLE_Y, LUG_HOLE_Z, 1.7) for sy in (-1, 1)])
     right = B.cut_all(right0, [B.cylx(-0.5, 9.0, sy * LUG_HOLE_Y, LUG_HOLE_Z, 1.35) for sy in (-1, 1)])
     return left, right
+
+
+def shell_full_solid(outer, cav, zmin=ZF, extra_cuts=(), extra_add=()):
+    """Variant of shell_full for shapes that are not a plain union of spheroids (shell_full itself is untouched).
+    outer = the finished outer solid, cav = the finished cavity solid (the outer shape shrunk by the wall; the Ø123.6 head
+    cavity is added here). Everything after that is the same recipe as shell_full: cut off at zmin, solid 3.2 mm mating
+    plate taken from the outer shape (Ø96 hole, six magnet pockets opening downward) and an M3 lug block at the front and
+    back seam."""
+    cav = cav.union(cq.Workplane("XY").sphere(B.SHELL_CAV_R).translate((0, 0, ZC)))
+    body = outer.cut(cav).intersect(B.box(-300, 300, -300, 300, zmin, 400))
+    plate = outer.intersect(B.box(-300, 300, -300, 300, ZF, 0.0)).cut(B.cylz(0, 0, ZF - 1, 1, B.COLLAR_ID / 2))
+    shell = body.union(plate)
+    for e in extra_add:
+        shell = shell.union(e)
+    yo = plate.val().BoundingBox().ymax
+    yb = max(yo + 6.0, 66.0)
+    for sy in (-1, 1):
+        ya, yz = sorted((sy * (yo - 3.0), sy * yb))
+        shell = shell.union(B.box(-8.0, 8.0, ya, yz, ZF, 0.0))
+        ya, yz = sorted((sy * LUG_Y0, sy * yb))
+        shell = shell.union(B.box(-8.0, 8.0, ya, yz, -0.01, LUG_Z_TOP))
+    tools = list(B.magnet_pockets(ZF, B.MAG_POCKET_DEPTH, -1)) + list(extra_cuts)
+    return B.cut_all(shell, tools)
+
+
+def shell_halves_solid(outer, cav, **kw):
+    """Left/right halves of shell_full_solid, split exactly like shell_halves (right = mirror of left, lug holes cut last)."""
+    full = shell_full_solid(outer, cav, **kw)
+    left0 = B.half(full, -1)
+    right0 = left0.mirror("YZ")
+    left = B.cut_all(left0, [B.cylx(-9.0, 0.5, sy * LUG_HOLE_Y, LUG_HOLE_Z, 1.7) for sy in (-1, 1)])
+    right = B.cut_all(right0, [B.cylx(-0.5, 9.0, sy * LUG_HOLE_Y, LUG_HOLE_Z, 1.35) for sy in (-1, 1)])
+    return left, right
+
+
+def claude_ray(angle_deg, reach, inset=0.0):
+    """One soft ray: a cone frustum from CLAUDE_S0 out to the tip-sphere centre plus the tip sphere, in the XZ plane, `angle_deg`
+    from vertical (+ toward +x), starting at the head-sphere centre. The radius is CLAUDE_ROOT_R where the ray leaves the head
+    blob (distance R0) and CLAUDE_TIP_R at the tip. inset > 0 shrinks every radius (used for the cavity: inset = wall)."""
+    a = math.radians(angle_deg)
+    d = cq.Vector(math.sin(a), 0.0, math.cos(a))
+    c = cq.Vector(0.0, 0.0, ZC)
+    slope = (CLAUDE_TIP_R - CLAUDE_ROOT_R) / (reach - R0)
+    r_start = CLAUDE_ROOT_R + slope * (CLAUDE_S0 - R0)
+    cone = cq.Workplane("XY").add(cq.Solid.makeCone(r_start - inset, CLAUDE_TIP_R - inset, reach - CLAUDE_S0,
+                                                    c + d * CLAUDE_S0, d))
+    tip = cq.Workplane("XY").sphere(CLAUDE_TIP_R - inset).translate((c + d * reach).toTuple())
+    return cone.union(tip)
+
+
+def claude_solids(wall=SHELL_WALL):
+    """(outer, cavity) of the Claude starburst: the head-swallowing sphere R0 plus seven rays; the cavity is the same
+    primitives shrunk by the wall."""
+    ctr = (0, 0, ZC)
+    outer = B.union_all([cq.Workplane("XY").sphere(R0).translate(ctr)] + [claude_ray(a, r) for a, r in CLAUDE_RAYS])
+    cav = B.union_all([cq.Workplane("XY").sphere(R0 - wall).translate(ctr)]
+                      + [claude_ray(a, r, inset=wall) for a, r in CLAUDE_RAYS])
+    return outer, cav
 
 
 def pear_blobs():
@@ -176,6 +245,11 @@ def build_jolly():
     return shell_halves(jolly_blobs(), zmin=JOLLY_HEM_Z, extra_cuts=arm_slots(), extra_add=[hood_ridge()])
 
 
+def build_claude():
+    outer, cav = claude_solids()
+    return shell_halves_solid(outer, cav)
+
+
 # =====================================================================================
 # clip-ons
 # =====================================================================================
@@ -243,6 +317,7 @@ JOBS = {
     "frog": (build_frog, "halves"),
     "heart": (build_heart, "halves"),
     "jolly": (build_jolly, "halves"),
+    "claude": (build_claude, "halves"),
     "beret": (build_beret, "single"),
     "glasses": (build_glasses_round, "single"),
     "sunglasses": (build_glasses_sun, "single"),
@@ -253,6 +328,7 @@ SUPPORT_NOTES = {
     "frog": "YES: eye domes and cheeks; tree supports (lies on its split face)",
     "heart": "YES: both lobes; tree supports (lies on its split face)",
     "jolly": "YES: hood peak, shoulder flank slots and the rim of the open hem; tree supports (lies on its split face)",
+    "claude": "YES: the two 38-degree rays (about 50 degrees off vertical when printed), the arch over the top ray and the dome crown; the 75 and 108 degree rays stand up nearly vertical; tree supports (lies on its split face)",
     "beret": "YES: underside of the saucer (print crown-down on the stalk with tree supports, or rim-down with supports under the saucer)",
     "glasses": "none (front face down: rims flat, temple arcs stand up as thin walls)",
     "sunglasses": "none (front face down: lens plates flat, temple arcs stand up as thin walls)",
@@ -270,10 +346,20 @@ STL_NAMES = {
     "frog": ("shell_frog_left", "shell_frog_right"),
     "heart": ("shell_heart_left", "shell_heart_right"),
     "jolly": ("shell_jolly_left", "shell_jolly_right"),
+    "claude": ("shell_claude_left", "shell_claude_right"),
     "beret": ("clip_beret",),
     "glasses": ("clip_glasses_round",),
     "sunglasses": ("clip_sunglasses",),
 }
+
+
+def pose_head_frame(wp, bob=0.0, nod=0.0, tilt=0.0):
+    """Move a head-frame part (collar plane z = 0) to where the head sits for a given bob (mm), nod and tilt (degrees).
+    This is exactly the transform B.assemble() applies to head_L / head_R (translate up to the collar plane, tilt about Y,
+    then nod about X), so a shell posed with it moves with the head. Used by check_shell_clearance.py and render_preview.py."""
+    wp = wp.translate((0, 0, B.HEAD_Z0_ABS + bob))
+    wp = wp.rotate((0, 0, B.TILT_AXIS_Z + bob), (0, 1, B.TILT_AXIS_Z + bob), tilt)
+    return wp.rotate((0, 0, B.NOD_AXIS_Z + bob), (1, 0, B.NOD_AXIS_Z + bob), nod)
 
 
 def describe(name, wp):
@@ -346,7 +432,7 @@ def main(selected=None, preview=True, build=True):
 # =====================================================================================
 PREVIEW_COLORS = {
     "cloud": (0.80, 0.90, 1.00), "pear": (0.62, 0.80, 0.35), "frog": (0.35, 0.72, 0.40), "heart": (0.95, 0.45, 0.55),
-    "jolly": (0.90, 0.92, 0.96), "beret": (0.75, 0.25, 0.30), "glasses": (0.15, 0.15, 0.18), "sunglasses": (0.10, 0.10, 0.12),
+    "jolly": (0.90, 0.92, 0.96), "claude": (0.85, 0.47, 0.34), "beret": (0.75, 0.25, 0.30), "glasses": (0.15, 0.15, 0.18), "sunglasses": (0.10, 0.10, 0.12),
     "head": (0.96, 0.90, 0.78),
 }
 
@@ -362,12 +448,14 @@ def render_preview(head_full):
     os.makedirs(pdir, exist_ok=True)
     cloud_L, cloud_R = B.build_cloud_former_halves()
     items = []                                              # (label, workplane, colour key, dx, dz)
-    row1 = [("cloud", cloud_L.union(cloud_R)), ("pear", None), ("frog", None), ("heart", None), ("jolly", None)]
+    row1 = [("cloud", cloud_L.union(cloud_R)), ("pear", None), ("frog", None), ("heart", None), ("jolly", None),
+            ("claude", None)]
     asm = os.path.join(out, "_assembly", "_shells")
-    x = 2 * 175.0                                           # seen from the front +X is on the left of the picture
+    step = 190.0                                            # six shells, the starburst is 186 mm wide
+    x = 2.5 * step                                          # seen from the front +X is on the left of the picture
     for key, wp in row1:
         items.append((key, wp, key, x, 0.0, os.path.join(asm, key + ".stl")))
-        x -= 175.0
+        x -= step
     row2 = [("beret", "beret"), ("glasses", "glasses"), ("sunglasses", "sunglasses")]
     x = 175.0
     for key, ck in row2:
@@ -409,7 +497,7 @@ def render_preview(head_full):
         a.GetProperty().SetSpecular(0.25)
         ren.AddActor(a)
     txt = vtk.vtkTextActor()
-    txt.SetInput("Top: cloud, pear, frog, heart, hooded Jolly shells.   Bottom: beret, round glasses, sunglasses on the bare head.")
+    txt.SetInput("Top: cloud, pear, frog, heart, hooded Jolly, starburst Claude shells.   Bottom: beret, round glasses, sunglasses on the bare head.")
     txt.GetTextProperty().SetFontSize(24)
     txt.GetTextProperty().SetColor(0.1, 0.1, 0.15)
     txt.SetPosition(20, 960)
@@ -426,7 +514,7 @@ def render_preview(head_full):
     cam.Azimuth(-18)
     cam.SetViewAngle(24)
     ren.ResetCamera()
-    cam.Zoom(1.55)
+    cam.Zoom(1.42)                                            # six shells across the top row (was 1.55 for five)
     ren.ResetCameraClippingRange()
     win.Render()
     w2i = vtk.vtkWindowToImageFilter()

@@ -1,6 +1,6 @@
-# Five controllable toys: build spec
+# Six controllable toys: build spec
 
-17 Oct 2026, Dan. Rev 15, exported 18 Oct 2026 as a backup of the working spec. Images are in docs/images.
+17 Oct 2026, Dan. Rev 15, exported 18 Oct 2026 as a backup of the working spec. Rev 16, 20 Oct: Claude added as a sixth toy, with a six-toy parts and materials costing. Images are in docs/images.
 
 Five Wi-Fi animatronic toys on one shared servo base: one Jolly (Meta's plush yeti, a body with arms) and four OpenAI dots (fuzzy blobs, built as motorised bobblehead bodies with no arms). Everything is printed, base and character shells alike, with fur or fleece glued over for the fuzzy look. Each toy carries its own ESP32; one MCP server we write drives all five, so an AI agent can turn, nod, bounce or wave any of them by name. Budget: about £250 all-in for the five. This page is for Cromwell: what the toys are, what moves, and what we would like printed.
 
@@ -8,7 +8,7 @@ Five Wi-Fi animatronic toys on one shared servo base: one Jolly (Meta's plush ye
 
 *The five toys as they should read on the desk: Jolly plus the four dots. Concept render, 17 Oct.*
 
-## The five units
+## The six units
 
 All five share one printed base. Jolly adds an arms module; the dots are bobblehead bodies, so the head does the acting.
 
@@ -19,8 +19,38 @@ All five share one printed base. Jolly adds an arms module; the dots are bobbleh
 | 3 | Dot: pear | Yellow pear or rounded triangle with glasses | Bobblehead body | No | Eyes, bounce and squash, lean |
 | 4 | Dot: frog | Green rounded frog blob | Bobblehead body | No | Eyes, bounce and squash, lean |
 | 5 | Dot: heart | Pink heart with sunglasses | Bobblehead body | No | Eyes, bounce and squash, lean |
+| 6 | Claude (added 20 Oct) | Coral fuzzy starburst, Claude's spark logo made plush: round body, seven soft rays, dot eyes, no mouth, no accessory | Bobblehead body | No | Eyes, bounce and squash, lean |
 
-Target size: 30 to 35 cm tall for Jolly, about 25 cm tall and wide for each dot. Neither character has a mouth, so there is no jaw mechanism. Jolly and the dots are Meta and OpenAI characters, so these are for personal and demo use only.
+Target size: 30 to 35 cm tall for Jolly, about 25 cm tall and wide for each dot. Neither character has a mouth, so there is no jaw mechanism. Jolly and the dots are Meta and OpenAI characters, and Claude is Anthropic's, so these are for personal and demo use only.
+
+## Sixth toy: Claude (added 20 Oct)
+
+Claude joins as a sixth toy, built like the four dots: same base, no arms, its own ESP32 and supply. Only the shell and the fleece colour are new.
+
+![Claude, concept render, 20 Oct](images/05-claude-character-concept.png)
+
+*Claude, concept render, 20 Oct*
+
+The shape is Claude's spark logo made plush: a round body with seven soft, rounded rays (one up, two diagonal up, two out to the sides, two angled down), uneven in length like the logo. Two black dot eyes, no mouth and no accessory, because the outline is the identity. The skin is coral or terracotta long-pile fleece (about #D97757) glued over the printed shell.
+
+![All six on the desk, concept render, 20 Oct](images/06-six-toys-concept.png)
+
+*All six on the desk, concept render, 20 Oct*
+
+In software it is unit 6: the same moves as a dot, and `toy.all` includes it.
+
+![CAD preview: Claude's shell on the base, at rest, then bobbed up 34 mm with 20 degrees of nod and tilt](images/07-claude-cad-preview.png)
+
+*CAD preview: Claude's shell on the base, at rest, then bobbed up 34 mm with 20 degrees of nod and tilt*
+
+**CAD (20 Oct):** the Claude shell is drawn and exported as two STL halves, `shell_claude_left` and `shell_claude_right`, bringing the set to 36 STLs. It is a sphere over the head with seven fat, round-tipped rays, 19 mm thick at the root and 14 mm at the tip, at 0, ±38, ±75 and ±108 degrees from vertical.
+
+- Size: 186 mm wide, 132 mm deep, 127 mm above the collar. Each half prints at 130 × 132 × 93 mm, so it fits the A1 mini.
+- Weight: the pair is about 109 g printed near-solid, about 27 g at normal shell settings. Worst case, the head comes to about 231 g against the 250 g budget, just under Jolly's 233 g.
+- Fit: it does not touch the head sphere, and it clears the base by at least 10.6 mm at full nod and full tilt, bobbed up or down.
+- Printing: tree supports on the diagonal rays and the crown, where about 11% of the surface overhangs.
+
+Not test-printed yet; the clearances are CAD distances with no allowance for print tolerance.
 
 ## What moves
 
@@ -44,9 +74,9 @@ Four servos in the core give every toy turn, bounce, nod and tilt. Jolly adds tw
 
 **CAD status (17 Oct, evening):** the whole base is drawn in CadQuery and exported as 34 print-ready STL files: base plate halves, turntable with the 70 mm bearing seat, torso column with the bob carriage and lift lever, three-part neck gimbal, head sphere halves with the 110 mm collar and six magnet pockets, four skin rings, shoulder sockets with caps and arm horns, plus the five character shells (cloud, pear, frog, heart, Jolly) and the beret, round glasses and sunglasses clip-ons. Height 311 mm, bob throw 34 mm. One base set is about 520 g of filament, each shell 83 to 134 g. One thing to check before any real print: servo and bearing pocket sizes are from datasheets, not measured, so print one shoulder socket and the neck base first. **Jolly hood fixed (21:10):** the hood's open lower edge was raised from 58 mm below the head centre to 26 mm, so it is now a 126 mm hood over the head and top of the neck rather than a full-depth shell. It clears the torso column by at least 4.2 mm at rest even with full nod and full tilt together (14 to 16 mm with one axis alone), and the Jolly head drops to about 233 g, inside the 250 g neck-servo budget. About 38 mm of neck flange shows below the hood; the fur covers it. The character shells are placeholders in shape: a better route is to generate them from the render with an image-to-3D tool (Hi3D or similar), then hollow them to a 1.5 mm wall and cut the collar ring in. The base stays hand-drawn CAD.
 
-![The five printed character shells and three clip-ons from the CAD, Jolly hood at its final height](images/04-shells-and-clip-ons.png)
+![The six printed character shells (Claude added 20 Oct) and three clip-ons from the CAD, Jolly hood at its final height](images/04-shells-and-clip-ons.png)
 
-*The five printed character shells and three clip-ons from the CAD, Jolly hood at its final height*
+*The six printed character shells (Claude added 20 Oct) and three clip-ons from the CAD, Jolly hood at its final height*
 
 Head mass budget is 250 g including the skin, or the small gimbal servos stall. The head former is a hollow Ø120 mm printed sphere in two halves. Every skin attaches at a Ø110 mm collar carrying six 5 mm magnets at 60° spacing, the same arrangement Reachy Mini uses, so skins swap in seconds.
 
@@ -61,6 +91,7 @@ Every character is a hollow printed shell that clips over the head sphere and to
 | Pear | Pear or rounded-triangle shell, glasses printed as a clip-on | Yellow fleece or flock | about 180 g |
 | Frog | Rounded frog shell with eye bumps | Green fleece or flock | about 200 g |
 | Heart | Heart shell, sunglasses printed as a clip-on | Pink fleece or flock | about 200 g |
+| Claude | Starburst shell in two halves: sphere with seven fat round-tipped rays | Coral or terracotta long-pile fleece | about 110 g |
 
 Shell rules: 1.5 mm walls (two perimeters), 0 to 5% infill, no supports where possible. That puts a Ø120 mm head shell at about 70 to 80 g before fabric, well inside the 250 g head budget. Eyes are printed white discs with black pupils glued on; the same pockets take LED matrices later.
 
@@ -95,6 +126,37 @@ The £243 above is the whole five-toy spend. Any "per toy" figure is that total 
 If step 1 shows we want headroom for spares, two cuts bring the total to about £205: one shared 5 V 10 A supply with a splitter lead instead of five PSUs (saves about £30, the toys then share one desk), and printed bearings instead of bought ones (saves about £12). Cromwell printing is assumed throughout; if he cannot, the printer in the backup plan below is the only line that would push past £250.
 
 Later add-ons per toy: PCA9685 servo board £14, I2S amp and 40 mm speaker £10, mic £5, two 8×8 RGB eye matrices £16. Servo-care rules still apply: per-servo min and max in software, a mechanical stop on the bounce lift.
+
+### Six-toy parts and materials, priced 20 Oct
+
+Live UK prices on 20 Oct 2026, free delivery, everything arriving 22 to 29 Oct. Nothing bought yet. The counts include a few spares: one extra ESP32, four extra MG996R, two extra MG90S. For buying, this replaces the five-toy table above. Links: A = amazon.co.uk/dp/, E = ebay.co.uk/itm/.
+
+| Part | Buy | Cost | Where |
+| --- | --- | --- | --- |
+| ESP32 WROOM-32 devkit, USB-C | 7 (6 + 1 spare) | £37.03 | E386194572609 |
+| MG996R servo (turn, bounce) | 16 in 4-packs (12 needed) | £55.96 | E800790539208 |
+| MG90S metal-gear servo (nod, tilt, Jolly's arms) | 16, a 10-pack and a 6-pack (14 needed) | £42.98 | A B0DGD55Q71, A B0C1N8VZ1S |
+| 5 V 4 A supply, 5.5 × 2.1 mm plug | 6, one per toy | £64.14 | E156521193797 |
+| Barrel sockets with screw terminals | 10-pack | £3.98 | A B07GJ43VKS |
+| Turntable bearings, 72 mm | 8 | £12.58 | A B0FBLK3JLH |
+| 5 × 2 mm magnets | 100 | £4.99 | A B0DQTVNWG2 |
+| M2 to M5 screw and nut kit, spring assortment | 1 each | £10.79 | A B0GKGWVQNF, A B07WFPPXXX |
+| Jumper wires, 20 servo extension leads | 1 kit, 2 packs | £20.97 | A B0BZ7PYYLB, A B08727XZBQ |
+| PLA+ filament | 4.4 kg | £31.44 | A B0GTLQ31W1 |
+| Long-pile faux fur, six colours at 50 × 180 cm, plus a glue gun | 6 + 1 | £60.73 | A B0FB9CNYR7, A B0DDKG29ND |
+| **Total** |  | **£345.59** | about £58 a toy |
+
+Optional: one PCA9685 servo board per toy adds £25.62 (A B0D7RQ5JXY), making £371.21. The lean build drives the servos straight from the ESP32, so these are only for tidier wiring.
+
+**Against Cromwell's £70 list:** his list is per toy, so £420 for six, and it has three gaps. It has four servos, but Jolly needs six. It has two PCA9685 boards per toy, but one board drives 16 servos and the lean build needs none. It has no fur or fleece. The basket above is cheaper and complete. His £200 fee covers Stage 1, one working Jolly, only.
+
+Checks before ordering:
+
+- Fur: there is no exact Claude coral. The nearest are "Peach Red" and "Shallow Orange", so check the swatch. The other five colours exist: cream, sky blue, yellow, light green and pink.
+- Magnets: the 100-pack does not state its grade. Confirmed N35 costs £19.98 for 2 × 50 (A B00TACMMP0).
+- One shared supply instead of six: not recommended. Six toys' servos at stall can draw more than a barrel splitter carries.
+- Genuine TowerPro MG996R are £9 each at The Pi Hut, £126 for 14. The cheap servos and ESP32s are unbranded clones, which is normal for this kind of build.
+- Filament: 4.4 kg covers six base sets at about 520 g each, plus the shells at about 0.8 kg, plus about 0.5 kg for failed prints. PETG for the gimbal and lift arm is not included.
 
 ## Voice and speech (added 17 Oct)
 
