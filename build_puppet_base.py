@@ -13,6 +13,8 @@ import sys
 
 import cadquery as cq
 
+import print_settings as PS
+
 # =====================================================================================
 # PARAMETERS  (single source of truth)
 # =====================================================================================
@@ -33,7 +35,7 @@ COLLAR_T = 3.2          # collar flange thickness (pocket 2.2 + skin 0.8 + 0.2 s
 MAG_PCD = 103.0         # pitch-circle diameter of the magnet pockets (centre of the ring band)
 
 # --- servos ----------------------------------------------------------------------
-# MG90D (metal-gear micro servo)
+# MG90S (metal-gear micro servo; the size in the shopping basket. Same body and tabs as the MG90D)
 MG90_L, MG90_W, MG90_H = 22.8, 12.2, 28.5     # body: length (tab direction), width, height
 MG90_TAB_SPAN = 32.5                          # overall length including the two M2 tabs
 MG90_TAB_T = 1.6                              # tab thickness
@@ -70,7 +72,7 @@ BOARD_BAY_DEPTH = 20.0
 SPLIT_X = 0.0                                 # base, torso column and head split on a flat plane
 
 # --- bearing + yaw ----------------------------------------------------------------
-BEARING_OD = 70.0                             # lazy-susan bearing
+BEARING_OD = 72.0                             # lazy-susan bearing: 72 mm, the one in the shopping basket (B0FBLK3JLH)
 BEARING_ID = 38.0                             # (CHECK) centre hole of the bearing
 BEARING_H = 7.0                               # (CHECK)
 SEAT_D = 1.2                                  # locating recess depth
@@ -215,11 +217,37 @@ MAG_POCKET_DEPTH = MAG_DEPTH + CLEAR   # 2.2
 # =====================================================================================
 # 1  BASE PLATE (two halves)
 # =====================================================================================
-def build_base_full():
+BASE_BAYS = {                                       # (cx, cy, size_x, size_y): electronics bays, open on top
+    "pca9685": (56.0, 0.0, PCA9685[1], PCA9685[0]),     # long axis along Y
+    "esp32": (-56.0, 0.0, ESP32[1], ESP32[0]),
+    "buck": (28.0, 48.0, BUCK[0], BUCK[1]),             # long axis along X; y 48 keeps 1.5 mm to the 72 mm bearing seat
+}
+BASE_WELLS = ((22.0, -55.0), (-32.0, 49.0))         # washer ballast wells
+JACK_POCKET_R = 60.0                                # barrel-jack nut pocket centre radius (at -135 degrees)
+SPEAKER_Y1 = 74.0                                   # front face of the speaker pocket
+BASE_LANE_X = (-42.5, 44.0)                         # cable lane from the yaw servo to the ESP32 and PCA9685 bays
+FOOT_PCR, FOOT_R, FOOT_DEPTH = 58.0, 6.1, 1.5       # rubber feet recesses
+# --- hollowing: open-top pockets, kept only where they save plastic at the settings in print_settings.py ----------
+BASE_FLOOR_T = 3.0                                  # solid floor under every pocket
+BASE_POCKET_R = BASE_R - WALL - 0.6                 # pockets stop inside a 3 mm outer wall
+BASE_KEEP = WALL                                    # full-strength wall kept round the servo, bays, wells, jack, speaker, lane, screws, feet
+POCKET_MIN_RATIO = 2.5                              # mm; never cut a pocket thinner than this, whatever the infill
+BASE_BAY_LEDGE = {"pca9685": 3.0, "esp32": 2.5, "buck": 2.5}   # a board rests on ledges this long at its two short ends
+BASE_POCKETS_REPORT = []                            # (name, cm3, volume/new-wall ratio mm, grams saved, kept?) from the last build
+
+
+def base_disc():
     b = cylz(0, 0, 0, BASE_H, BASE_R)
     b = b.faces("<Z").chamfer(CHAMFER)
-    b = b.faces(">Z").chamfer(1.0)
+    return b.faces(">Z").chamfer(1.0)
 
+
+def build_base_full():
+    return cut_all(base_disc(), base_feature_tools(split_join=True))
+
+
+def base_feature_tools(split_join=False):
+    """Every cut the base needs to hold its parts. split_join adds the screw wells and holes that join the two halves."""
     tools = []
     # bearing seat
     tools.append(cylz(0, 0, BASE_H - SEAT_D, BASE_H + 1, BEARING_OD / 2 + CLEAR))
@@ -234,31 +262,26 @@ def build_base_full():
     tools.append(box(-sx, sx, -by, by, ledge_z, BASE_H + 1))                       # tab slot
     for sx_ in (-1, 1):
         for sy_ in (-1, 1):
-            tools.append(cylz(sx_ * MG996_HOLE_DX / 2, sy_ * MG996_HOLE_DY / 2, ledge_z - 12, ledge_z + 0.01, MG996_HOLE_D / 2))
+            tools.append(cylz(sx_ * MG996_HOLE_DX / 2, sy_ * MG996_HOLE_DY / 2, -1, ledge_z + 0.01, MG996_HOLE_D / 2))   # through: no trapped support
     # cable lane: servo lead -> up a groove -> sideways under the bearing to the ESP32 and PCA9685 bays
     tools.append(box(-3, 3, by - 0.2, by + 4, 3.0, ledge_z + 12))
-    tools.append(box(-42.5, 44.0, by - 0.2, by + 6, ledge_z, ledge_z + 11))
+    tools.append(box(BASE_LANE_X[0], BASE_LANE_X[1], by - 0.2, by + 6, ledge_z, ledge_z + 11))
 
     # electronics bays (open on top, covered by the turntable plate)
-    layout = {
-        "pca9685": (56.0, 0.0, PCA9685[1], PCA9685[0]),     # (cx, cy, size_x, size_y) long axis along Y
-        "esp32": (-56.0, 0.0, ESP32[1], ESP32[0]),
-        "buck": (28.0, 47.0, BUCK[0], BUCK[1]),             # long axis along X
-    }
-    for name, (cx, cy, sx_, sy_) in layout.items():
+    for name, (cx, cy, sx_, sy_) in BASE_BAYS.items():
         w, h = sx_ + 2 * CLEAR, sy_ + 2 * CLEAR
         check_inside(name, rect_pts(cx, cy, w, h))
         tools.append(box(cx - w / 2, cx + w / 2, cy - h / 2, cy + h / 2, BASE_H - BOARD_BAY_DEPTH, BASE_H + 1))
 
     # washer ballast wells (two deep round wells)
     wr = WASHER_OD / 2 + 0.3
-    for (cx, cy) in ((22.0, -55.0), (-32.0, 49.0)):
+    for (cx, cy) in BASE_WELLS:
         check_inside("well", [(cx + wr * math.cos(a), cy + wr * math.sin(a)) for a in [i * math.pi / 6 for i in range(12)]])
         tools.append(cylz(cx, cy, BASE_H - WELL_DEPTH, BASE_H + 1, wr))
 
     # speaker: top-open pocket facing the front wall, with a diamond sound port (no overhang)
     sp_r = SPEAKER_D / 2 + 0.2
-    y1, y0 = 74.0, 74.0 - SPEAKER_DEPTH
+    y1, y0 = SPEAKER_Y1, SPEAKER_Y1 - SPEAKER_DEPTH
     check_inside("speaker", [(-sp_r, y1), (sp_r, y1)])
     tools.append(box(-sp_r, sp_r, y0, y1, 3.8, BASE_H + 1))
     port = cq.Workplane("XZ").workplane(offset=-(BASE_R + 5)).center(0, 24.0).polygon(4, 2 * 19.0).extrude(BASE_R + 5 - (y1 - 0.5))
@@ -271,7 +294,7 @@ def build_base_full():
     jack = cylx(56.0, BASE_R + 5, 0, 24.0, JACK_D / 2)
     jack = jack.rotate((0, 0, 0), (0, 0, 1), -135)
     tools.append(jack)
-    jp = (60.0 * jd[0], 60.0 * jd[1])
+    jp = (JACK_POCKET_R * jd[0], JACK_POCKET_R * jd[1])
     check_inside("jack pocket", [(jp[0] + 9 * math.cos(a), jp[1] + 9 * math.sin(a)) for a in [i * math.pi / 4 for i in range(8)]])
     tools.append(cylz(jp[0], jp[1], 12.0, BASE_H + 1, 9.0))
 
@@ -283,13 +306,14 @@ def build_base_full():
     # rubber feet recesses
     for k in range(4):
         a = math.radians(45 + 90 * k)
-        tools.append(cylz(58.0 * math.cos(a), 58.0 * math.sin(a), -0.01, 1.5, 6.1))
+        tools.append(cylz(FOOT_PCR * math.cos(a), FOOT_PCR * math.sin(a), -0.01, FOOT_DEPTH, FOOT_R))
 
     # half-to-half joining: two screw shafts (vertical well + horizontal M3 through-hole), 3 dowel holes
-    for (sy_) in (-44.0, 49.0):
-        tools.append(cylz(-6.0, sy_, 12.0, BASE_H + 1, 4.5))                       # driver access well (left half)
-        tools.append(cylx(-6.0, 0.0, sy_, 14.0 if False else 16.0, 1.75))          # clearance through to the split face
-    return cut_all(b, tools)
+    if split_join:
+        for (sy_) in (-44.0, 49.0):
+            tools.append(cylz(-6.0, sy_, 12.0, BASE_H + 1, 4.5))                   # driver access well (left half)
+            tools.append(cylx(-6.0, 0.0, sy_, 14.0 if False else 16.0, 1.75))      # clearance through to the split face
+    return tools
 
 
 def base_screw_pilots(wp, side):
@@ -307,10 +331,93 @@ def base_screw_pilots(wp, side):
 
 
 def build_base_halves():
+    """The old two-piece base (not hollowed, not exported any more): only for a bed smaller than 165 mm."""
     full = build_base_full()
     left = base_screw_pilots(half(full, -1), -1)
     right = base_screw_pilots(half(full, +1), +1)
     return left, right
+
+
+def pocket_break_even():
+    """A pocket saves plastic only when its volume / the new wall area it adds beats this (mm): skin * (1 - infill) / infill."""
+    f = PS.INFILL
+    if f <= 0:
+        return float("inf")
+    return max(POCKET_MIN_RATIO, PS.skin_mm() * (1 - f) / f)
+
+
+def base_keep_solids(skip=()):
+    """Regions the hollowing must not touch: everything that holds a part, plus a BASE_KEEP wall round it.
+    Each runs from the floor to the top, so every pocket is a plain open-top well with nothing overhanging it."""
+    k, z0, z1 = BASE_KEEP, BASE_FLOOR_T - 0.01, BASE_H + 1
+    bx = (MG996_TAB_SPAN + 2 * CLEAR) / 2
+    by = (MG996_W + 2 * CLEAR) / 2
+    r_core = max(math.hypot(bx, by), BEARING_SCREW_R + 1.35) + k       # yaw-servo tab slot and the bearing screw pilots
+    r_seat = BEARING_OD / 2 + CLEAR + k                                  # round the bearing seat
+    z_seat = Z_BEAR0 - k                                                 # solid floor under the seat
+    z_flare = z_seat - (r_seat - r_core)                                 # 45 degree flare from the core out under the seat
+    keep = [cq.Workplane("XZ").polyline([(0, z0), (r_core, z0), (r_core, z_flare), (r_seat, z_seat), (r_seat, z1), (0, z1)])
+            .close().revolve(360, (0, 0, 0), (0, 1, 0))]
+    if "bays" not in skip:
+        for (cx, cy, sx_, sy_) in BASE_BAYS.values():
+            w, h = sx_ + 2 * CLEAR + 2 * k, sy_ + 2 * CLEAR + 2 * k
+            keep.append(box(cx - w / 2, cx + w / 2, cy - h / 2, cy + h / 2, z0, z1))
+    if "lane" not in skip:
+        keep.append(box(BASE_LANE_X[0] - k, BASE_LANE_X[1] + k, by - 0.2 - k, by + 6 + k, z0, z1))
+    for (cx, cy) in BASE_WELLS:
+        keep.append(cylz(cx, cy, z0, z1, WASHER_OD / 2 + 0.3 + k))
+    sp_r = SPEAKER_D / 2 + 0.2 + k
+    keep.append(box(-sp_r, sp_r, SPEAKER_Y1 - SPEAKER_DEPTH - k, SPEAKER_Y1 + k, z0, z1))
+    ja = math.radians(-135)
+    keep.append(cylz(JACK_POCKET_R * math.cos(ja), JACK_POCKET_R * math.sin(ja), z0, z1, 9.0 + k))
+    keep.append(rot_z(box(JACK_POCKET_R - 10.0, BASE_R + 1, -(JACK_D / 2 + k), JACK_D / 2 + k, z0, z1), -135))
+    for kk in range(4):
+        a = math.radians(45 + 90 * kk)
+        keep.append(cylz(FOOT_PCR * math.cos(a), FOOT_PCR * math.sin(a), z0, 6.0, FOOT_R + k))   # solid pad over each foot
+    return keep
+
+
+def _pocket_if_it_pays(name, s, need, z_top, ext):
+    """Measure one candidate pocket (a Solid whose top face is at z_top, ext mm above the part's top) and keep it only
+    if volume / new wall area >= need. Grams saved follow the same weight model as print_cost.py."""
+    tops = [f for f in s.Faces() if abs(f.Center().z - z_top) < 1e-3 and f.normalAt().z > 0.99]
+    top = sum(f.Area() for f in tops)
+    perim = sum(e.Length() for f in tops for e in f.Edges())
+    v = s.Volume() - top * ext
+    a = s.Area() - perim * ext - 2 * top            # new wall area: the pocket floor replaces the top face it opens
+    ratio = v / a if a > 0 else float("inf")
+    saved = (PS.INFILL * v - (1 - PS.INFILL) * PS.skin_mm() * a) * PS.DENSITY / 1000.0
+    kept = ratio >= need
+    BASE_POCKETS_REPORT.append((name, v / 1000.0, ratio, saved, kept))
+    return [s] if kept else []
+
+
+def base_pocket_tools():
+    """Open-top pockets that hollow the base wherever they save plastic at the current print settings.
+    Main pockets fill the room between the keep regions; under-bay voids deepen each bay below its board ledges
+    (they also give the ESP32's header pins room)."""
+    BASE_POCKETS_REPORT.clear()
+    need = pocket_break_even()
+    z1 = BASE_H + 1
+    cand = cut_all(cylz(0, 0, BASE_FLOOR_T, z1, BASE_POCKET_R), base_keep_solids())
+    tools = []
+    for i, s in enumerate(cand.solids().vals()):
+        tools += _pocket_if_it_pays(f"pocket {i + 1}", s, need, z1, z1 - BASE_H)
+    zb = BASE_H - BOARD_BAY_DEPTH + 0.01
+    others = base_keep_solids(skip=("bays", "lane"))
+    for name, (cx, cy, sx_, sy_) in BASE_BAYS.items():
+        w, h = sx_ + 2 * CLEAR, sy_ + 2 * CLEAR
+        led = BASE_BAY_LEDGE[name]
+        dx, dy = (led, 0.0) if w > h else (0.0, led)
+        v = cut_all(box(cx - w / 2 + dx, cx + w / 2 - dx, cy - h / 2 + dy, cy + h / 2 - dy, BASE_FLOOR_T, zb), others)
+        for s in v.solids().vals():
+            tools += _pocket_if_it_pays(f"under {name}", s, need, zb, 0.0)
+    return tools
+
+
+def build_base_one():
+    """One-piece base (it fits a 220 mm bed): every feature of the old halves, no split joins, hollowed where it pays."""
+    return cut_all(base_disc(), base_feature_tools() + base_pocket_tools())
 
 
 # =====================================================================================
@@ -332,13 +439,17 @@ def column_screw_points():
     return pts
 
 
+HUB_SCREW_R = 9.0                               # 4x M2 up through the yaw horn and the hub into the plate
+HUB_RECESS = HORN_T + 0.4                       # the stock horn sits in this recess under the hub
+
+
 def build_turntable():
+    """Plate with the lift-servo cradle. Prints plate-down, cradle up, with no supports: the horn hub is its own part
+    (build_turntable_hub), the bearing's top ring screws flat to the underside, and the servo slot is open at the top."""
     z0 = Z_BEAR1
     t = cylz(0, 0, z0, Z_PLATE_TOP, PLATE_D / 2)
     t = t.faces("<Z").chamfer(CHAMFER)
     t = t.faces(">Z").chamfer(CHAMFER)
-    t = t.union(cylz(0, 0, Z_HUB0, z0 + 0.01, HUB_D / 2))
-    t = t.union(cylz(0, 0, Z_HUB0, z0 + 0.01, HUB_D / 2 + 0.0).faces("<Z").chamfer(CHAMFER))
 
     # lift-servo cradle: a wall in the XZ plane carrying the MG996R on its side (shaft along +Y)
     wx = (MG996_TAB_SPAN + 8.4) / 2
@@ -355,14 +466,12 @@ def build_turntable():
     t = t.union(box(-5, 5, -34.0, -29.0, Z_PLATE_TOP - 0.01, Z_PLATE_TOP + 9.0))
 
     tools = []
-    # horn recess (underside of hub) + centre screw access + 4 horn-screw pilots
-    tools.append(cylz(0, 0, Z_HUB0 - 0.01, Z_HUB0 + HORN_T + 0.4, HORN_D / 2 + CLEAR))
-    tools.append(cylz(0, 0, Z_HUB0, Z_PLATE_TOP + 1, 3.6))
+    # centre screw access + 4 pilots (through) for the M2 screws that hold the hub and horn to the plate
+    tools.append(cylz(0, 0, z0 - 1, Z_PLATE_TOP + 1, 3.6))
     for k in range(4):
         a = math.radians(45 + 90 * k)
-        tools.append(cylz(9.0 * math.cos(a), 9.0 * math.sin(a), Z_HUB0 + HORN_T, Z_HUB0 + HORN_T + 7, 0.95))
-    # bearing recess + 3 bearing screws
-    tools.append(cylz(0, 0, z0 - 0.01, z0 + SEAT_D, BEARING_OD / 2 + CLEAR))
+        tools.append(cylz(HUB_SCREW_R * math.cos(a), HUB_SCREW_R * math.sin(a), z0 - 1, Z_PLATE_TOP + 1, 0.95))
+    # 3 bearing screws
     for k in range(3):
         a = math.radians(90 + k * 120)
         tools.append(cylz(BEARING_SCREW_R * math.cos(a), BEARING_SCREW_R * math.sin(a), z0 - 0.01, Z_PLATE_TOP + 1, 1.7))
@@ -370,16 +479,28 @@ def build_turntable():
     for (x, y) in column_screw_points():
         tools.append(cylz(x, y, z0 - 0.01, Z_PLATE_TOP + 1, 1.7))
         tools.append(hexz(x, y, z0 - 0.01, z0 + 2.8, 5.8))
-    # servo window in the cradle wall + 4 M4 pilots
+    # servo slot in the cradle wall, open at the top (the servo drops in; no bridge to print) + 4 M4 pilots
     ww = (MG996_L + 2 * CLEAR) / 2
     wz = (MG996_W + 2 * CLEAR) / 2
-    tools.append(box(-ww, ww, LIFT_WALL_Y0 - 0.01, LIFT_WALL_Y1 + 0.01, LIFT_ZC - wz, LIFT_ZC + wz))
+    tools.append(box(-ww, ww, LIFT_WALL_Y0 - 0.01, LIFT_WALL_Y1 + 0.01, LIFT_ZC - wz, LIFT_ZC + 16.0))
     for sx_ in (-1, 1):
         for sz_ in (-1, 1):
-            tools.append(cyly(LIFT_WALL_Y0 - 0.01, LIFT_WALL_Y0 + 7.0, sx_ * MG996_HOLE_DX / 2, LIFT_ZC + sz_ * MG996_HOLE_DY / 2, MG996_HOLE_D / 2))
+            tools.append(cyly(LIFT_WALL_Y0 - 0.01, LIFT_WALL_Y1 + 1.0, sx_ * MG996_HOLE_DX / 2, LIFT_ZC + sz_ * MG996_HOLE_DY / 2, MG996_HOLE_D / 2))   # through the wall
     # spring lug hole
     tools.append(cyly(-35.0, -28.0, 0, Z_PLATE_TOP + 5.0, 1.3))
     return cut_all(t, tools)
+
+
+def build_turntable_hub():
+    """Horn hub (assembly frame): a disc between the yaw horn and the plate underside, inside the bearing's centre hole.
+    Four M2 screws go up through the horn and the hub into the plate. Prints upside down (floor on the bed), no supports."""
+    h = cylz(0, 0, Z_HUB0, Z_BEAR1, HUB_D / 2).faces("<Z").chamfer(CHAMFER)
+    tools = [cylz(0, 0, Z_HUB0 - 0.01, Z_HUB0 + HUB_RECESS, HORN_D / 2 + CLEAR),
+             cylz(0, 0, Z_HUB0 - 1, Z_BEAR1 + 1, 3.6)]
+    for k in range(4):
+        a = math.radians(45 + 90 * k)
+        tools.append(cylz(HUB_SCREW_R * math.cos(a), HUB_SCREW_R * math.sin(a), Z_HUB0 - 1, Z_BEAR1 + 1, 1.1))
+    return cut_all(h, tools)
 
 
 # =====================================================================================
@@ -528,28 +649,43 @@ G_C_PLATE_T = 4.0
 G_C_PLATE_D = 88.0
 G_C_SCREW_R = 38.0
 NECK_TOP = G_C_PLATE_Z0 + G_C_PLATE_T          # top face of the head plate (rel. to flange underside)
-M2_SHAFT = 1.8                                  # clearance hole for the MG90D spline tip: use Ø7 (below)
+M2_SHAFT = 1.8                                  # clearance hole for the MG90S spline tip: use Ø7 (below)
+
+
+G_PLUG_Z0 = -16.0                               # plug and sleeve run this far down the stem (the sleeve needs it for its 45 degree flare)
+G_SLEEVE_IN = STEM_OD / 2 + 0.4                 # sleeve round the outside of the stem top
+G_SLEEVE_OUT = G_SLEEVE_IN + WALL
 
 
 def build_neck_base():
-    """A: plug into the stem, flange, two uprights; right upright carries the nod servo (shaft along X)."""
-    t = cylz(0, 0, -12.0, 0.01, 38.4 / 2)
+    """A: plug inside the stem, a sleeve round it, flange, two uprights; right upright carries the nod servo (shaft along X).
+    The sleeve flares out at 45 degrees under the flange and the uprights, so A prints plug-down with no supports."""
+    t = cylz(0, 0, G_PLUG_Z0, 0.01, 38.4 / 2)
     t = t.union(cylz(0, 0, 0, G_FLANGE_T, G_FLANGE_D / 2))
+    foot = cylz(0, 0, G_PLUG_Z0 - 1, 0.02, G_FLANGE_D / 2)
     for sx in (-1, 1):
         xa, xb = sx * G_UP_IN, sx * (G_UP_IN + G_UP_T)
-        t = t.union(box(min(xa, xb), max(xa, xb), -15.0, 26.0, G_FLANGE_T - 0.01, G_ZN + 12.0))
-    tools = [cylz(0, 0, -13, G_FLANGE_T + 1, 30.0 / 2)]                       # cable hole
-    # cross-screw pilots (match the stem holes at -6 and -11)
-    tools.append(cylx(-25, 25, 0, -6.0, 1.35))
-    tools.append(cyly(-25, 25, 0, -11.0, 1.35))
+        t = t.union(box(min(xa, xb), max(xa, xb), -15.0, 26.0, -0.01, G_ZN + 12.0))
+        foot = foot.union(box(min(xa, xb), max(xa, xb), -15.0, 26.0, G_PLUG_Z0 - 1, 0.02))
+    r_top = G_SLEEVE_OUT - G_PLUG_Z0                # 45 degrees: the flare reaches this radius at the flange underside
+    skirt = (cq.Workplane("XZ").polyline([(G_SLEEVE_IN, G_PLUG_Z0), (G_SLEEVE_OUT, G_PLUG_Z0), (r_top, 0.0), (G_SLEEVE_IN, 0.0)])
+             .close().revolve(360, (0, 0, 0), (0, 1, 0)))
+    t = t.union(skirt.intersect(foot))              # only under the flange and the uprights
+    tools = [cylz(0, 0, G_PLUG_Z0 - 1, G_FLANGE_T + 1, 30.0 / 2)]            # cable hole
+    # cross screws (match the stem holes at -6 and -11): pilot in the plug, clearance through stem and sleeve, counterbore
+    for (z, hole) in ((-6.0, cylx), (-11.0, cyly)):
+        tools.append(hole(-19.3, 19.3, 0, z, 1.35))
+        for s in (-1, 1):
+            tools.append(hole(*sorted((s * 19.3, s * 45.0)), 0, z, 1.7))
+            tools.append(hole(*sorted((s * G_SLEEVE_OUT, s * 45.0)), 0, z, 3.2))
     # left pivot hole (M3 through the upright into B's boss)
     tools.append(cylx(-(G_UP_IN + G_UP_T) - 1, -G_UP_IN + 1, 0, G_ZN, 1.7))
-    # right upright: window for the MG90D (L along Y, shaft at y=0), M2 pilots in the tab line
+    # right upright: window for the MG90S (L along Y, shaft at y=0), M2 pilots in the tab line
     y0, y1 = -MG90_SHAFT_OFF - CLEAR, MG90_L - MG90_SHAFT_OFF + CLEAR
     tools.append(box(G_UP_IN - 1, G_UP_IN + G_UP_T + 1, y0, y1, G_ZN - MG90_W / 2 - CLEAR, G_ZN + MG90_W / 2 + CLEAR))
     yc = (MG90_L / 2) - MG90_SHAFT_OFF
     for sy in (-1, 1):
-        tools.append(cylx(G_UP_IN + 0.5, G_UP_IN + G_UP_T + 0.01, yc + sy * MG90_HOLE_DX / 2, G_ZN, MG90_HOLE_D / 2))
+        tools.append(cylx(G_UP_IN - 0.01, G_UP_IN + G_UP_T + 0.01, yc + sy * MG90_HOLE_DX / 2, G_ZN, MG90_HOLE_D / 2))   # through the upright
     return cut_all(t, tools)
 
 
@@ -572,12 +708,12 @@ def build_neck_rocker():
     tools.append(cylx(G_B_OUT - G_B_WALL - 1, G_B_OUT + 1, 0, G_ZN, 3.5))
     for sz in (-1, 1):
         tools.append(cylx(G_B_OUT - 6.0, G_B_OUT + 0.01, 0, G_ZN + sz * 7.0, 0.95))
-    # front wall: window for the tilt MG90D (L along X, shaft at x=0), tab pilots
+    # front wall: window for the tilt MG90S (L along X, shaft at x=0), tab pilots
     xo = (MG90_L / 2) - MG90_SHAFT_OFF
     x0, x1 = -MG90_SHAFT_OFF - CLEAR, MG90_L - MG90_SHAFT_OFF + CLEAR
     tools.append(box(x0, x1, G_B_Y - G_B_FRONT_T - 1, G_B_Y + 1, G_ZT - MG90_W / 2 - CLEAR, G_ZT + MG90_W / 2 + CLEAR))
     for sx in (-1, 1):
-        tools.append(cyly(G_B_Y - 3.5, G_B_Y + 0.01, xo + sx * MG90_HOLE_DX / 2, G_ZT, MG90_HOLE_D / 2))
+        tools.append(cyly(G_B_Y - G_B_FRONT_T - 0.01, G_B_Y + 0.01, xo + sx * MG90_HOLE_DX / 2, G_ZT, MG90_HOLE_D / 2))   # through the front wall
     # back wall: clearance for the tilt pivot screw
     tools.append(cyly(-G_B_Y - 1, -G_B_Y + G_B_FRONT_T + 1, 0, G_ZT, 1.7))
     # cable slot in the bottom
@@ -678,7 +814,7 @@ def build_skin_ring(tag=1):
 # 7  SHOULDER SOCKETS (right side built; left = mirror), BLANKING CAPS, ARM HORNS
 # =====================================================================================
 # The socket bolts onto the outer end of the carriage slider block (x = 56) so it bobs with the body.
-# MG90D sits with its shaft along +Y (arm swings in the X-Z plane), body ABOVE the shaft.
+# MG90S sits with its shaft along +Y (arm swings in the X-Z plane), body ABOVE the shaft.
 SK_X0 = BLOCK_X1                                    # back face on the slider block
 SK_BACK_T = 4.8                                     # 2.4 skin + 2.4 counterbore for the M3 screw heads
 SK_POCKET_X0 = SK_X0 + SK_BACK_T
@@ -697,7 +833,7 @@ SK_BODY_Z1 = SK_ZC - MG90_SHAFT_OFF + MG90_L + CLEAR
 SK_Z0, SK_Z1 = SK_BODY_C - 18.0, SK_BODY_C + 18.0
 SK_SCREW_Z = (SK_ZC - 5.0, SK_ZC + 5.0)             # the two carriage-block pilots (see build_carriage)
 HORN_BOSS_L = 24.0
-HORN_T = 4.0
+ARM_HORN_T = 4.0                                    # own name: it used to reuse HORN_T and so made the turntable's horn recess 4.4 deep
 HORN_BOSS_T = 9.0
 
 
@@ -711,7 +847,7 @@ def build_socket_right():
         tools.append(cylx(SK_X0 + 2.4, SK_POCKET_X0 + 0.01, 0, z, 3.2))               # counterbore for the screw head
         tools.append(cylx(SK_POCKET_X1 - 0.01, SK_X1 + 1, 0, z, 3.5))                 # screwdriver access through the outer wall
     for sz in (-1, 1):
-        tools.append(cyly(SK_TAB_Y - 6.0, SK_TAB_Y + 0.01, SK_SHAFT_X, SK_BODY_C + sz * MG90_HOLE_DX / 2, MG90_HOLE_D / 2))   # M2 tab pilots
+        tools.append(cyly(SK_Y0 - 1, SK_TAB_Y + 0.01, SK_SHAFT_X, SK_BODY_C + sz * MG90_HOLE_DX / 2, MG90_HOLE_D / 2))   # M2 tab pilots, through (Andy: support gets trapped in blind ones)
     return cut_all(s, tools)
 
 
@@ -727,16 +863,16 @@ def build_socket_cap():
 def build_arm_horn():
     """Printed horn in its own frame: shaft along +Z (print flat, disc down), arm along +X.
     The 2 mm armature wire slides into the boss and is pinched by an M2 grub/self-tapping screw."""
-    disc = cylz(0, 0, 0, HORN_T, 10.0)
+    disc = cylz(0, 0, 0, ARM_HORN_T, 10.0)
     boss = box(0.0, HORN_BOSS_L, -HORN_BOSS_T / 2, HORN_BOSS_T / 2, 0, HORN_BOSS_T)
     h = disc.union(boss)
     zw = HORN_BOSS_T / 2
     tools = [cyl_x_local(5.0, HORN_BOSS_L + 1, zw, (ARM_WIRE_D + 0.3) / 2)]       # wire bore, 19 mm deep
     tools.append(cylz(15.0, 0, zw, HORN_BOSS_T + 1, 0.8))                         # M2 pinch screw from above, meets the bore
-    tools.append(cylz(0, 0, -1, HORN_T + 1, 1.25))                                 # centre screw (M2) through the servo spline
+    tools.append(cylz(0, 0, -1, ARM_HORN_T + 1, 1.25))                             # centre screw (M2) through the servo spline
     for k in range(4):                                                             # screws into the stock cross horn
         a = math.radians(45 + 90 * k)
-        tools.append(cylz(6.5 * math.cos(a), 6.5 * math.sin(a), -1, HORN_T + 1, 0.6))
+        tools.append(cylz(6.5 * math.cos(a), 6.5 * math.sin(a), -1, ARM_HORN_T + 1, 0.6))
     return cut_all(h, tools)
 
 
@@ -816,6 +952,32 @@ def build_cloud_former_halves():
 
 
 # =====================================================================================
+# 8b DUMMY CORE: a light stand that holds a resting skin on the shelf (one for each skin that is off the base)
+# =====================================================================================
+CORE_WALL = 1.2                 # 3 perimeters at 0.4 mm
+CORE_TUBE_R = 30.0              # passes down through the skin's Ø96 neck hole
+CORE_TUBE_Z0 = -30.0            # the tube runs down to here, then a 45 degree cone flares out to the foot
+CORE_FOOT_R = COLLAR_D / 2      # foot as wide as the collar
+CORE_SPOKES = 6
+
+
+def build_dummy_core():
+    """Head frame (collar plane z = 0): a copy of the head's magnet collar on six spokes, a thin tube down through the skin's
+    neck hole and a 45 degree cone foot. Everything above the collar plane sits inside the head's own outline, so any skin
+    that fits the head fits the core. Prints collar-down with no supports."""
+    ro, w = CORE_TUBE_R, CORE_WALL
+    ri, wh = ro - w, w * math.sqrt(2)               # wh = horizontal thickness of a 45 degree wall
+    z_foot = CORE_TUBE_Z0 - (CORE_FOOT_R - ro)
+    prof = [(ri, COLLAR_T), (ro, COLLAR_T), (ro, CORE_TUBE_Z0), (CORE_FOOT_R, z_foot), (CORE_FOOT_R - wh, z_foot),
+            (ri, CORE_TUBE_Z0 - (wh - w))]
+    core = cq.Workplane("XZ").polyline(prof).close().revolve(360, (0, 0, 0), (0, 1, 0))
+    core = core.union(cylz(0, 0, 0, COLLAR_T, COLLAR_D / 2).cut(cylz(0, 0, -1, COLLAR_T + 1, COLLAR_ID / 2)))
+    for k in range(CORE_SPOKES):                    # spokes sit between the magnets
+        core = core.union(rot_z(box(ri, COLLAR_ID / 2 + 0.5, -3.0, 3.0, 0.0, COLLAR_T), 30 + 60 * k))
+    return cut_all(core, magnet_pockets(COLLAR_T, MAG_POCKET_DEPTH, +1))
+
+
+# =====================================================================================
 # 9  ASSEMBLY PLACEMENT, POSES, PRINT ORIENTATION AND EXPORT
 # =====================================================================================
 HEAD_Z0_ABS = STEM_TOP_Z + NECK_TOP - WEB_Z0              # collar plane height with the carriage fully down
@@ -829,8 +991,9 @@ AX, AY, AZ = (1, 0, 0), (0, 1, 0), (0, 0, 1)
 
 def build_all():
     P = {}
-    P["base_L"], P["base_R"] = build_base_halves()
+    P["base"] = build_base_one()
     P["turntable"] = build_turntable()
+    P["turntable_hub"] = build_turntable_hub()
     P["column_L"], P["column_R"] = build_column_halves()
     P["carriage"] = build_carriage()
     P["yoke"] = build_yoke()
@@ -844,6 +1007,7 @@ def build_all():
     P["horn"] = build_arm_horn()                     # local frame
     P["wire"] = cyl_x_local(5.0, 5.0 + WIRE_LEN, HORN_BOSS_T / 2, ARM_WIRE_D / 2)
     P["cloud_L"], P["cloud_R"] = build_cloud_former_halves()
+    P["dummy_core"] = build_dummy_core()             # head frame; a shelf part, not in the assembly
     return P
 
 
@@ -860,7 +1024,7 @@ def assemble(P, bob=0.0, nod=0.0, tilt=0.0, arm_deg=-90.0, with_cloud=False):
     nod about X (+ = head leans forward/+Y... see note), tilt about Y; arm_deg = arm direction in the X-Z plane for the
     right arm (0 = out sideways, -90 = hanging down, +90 = straight up)."""
     A = {}
-    for k in ("base_L", "base_R", "turntable", "column_L", "column_R"):
+    for k in ("base", "turntable", "turntable_hub", "column_L", "column_R"):
         A[k] = P[k]
     # lever angle follows the bob: -45 deg (carriage down) .. +45 deg (carriage up)
     beta = -LIFT_SWING + (2 * LIFT_SWING) * (bob / BOB_THROW)
@@ -926,25 +1090,26 @@ def gimbal_interference(P):
 
 # print orientation: (file name, copies, part key, rotations, supports note, thin-wall?)
 PRINT_LIST = [
-    ("base_plate_left", 1, "base_L", [], "none (speaker/jack holes bridge by a few mm)", False),
-    ("base_plate_right", 1, "base_R", [], "none (speaker/jack holes bridge by a few mm)", False),
-    ("turntable", 1, "turntable", [], "YES: hub-down, small supports under the plate and cradle window", False),
+    ("base_plate", 1, "base", [], "none (one piece; pockets open on top; speaker/jack holes bridge by a few mm)", False),
+    ("turntable", 1, "turntable", [], "none (plate down, cradle up; servo slot open at the top)", False),
+    ("turntable_hub", 1, "turntable_hub", [(AX, 180)], "none (floor down)", False),
     ("column_left", 1, "column_L", [], "none (stands on its foot ring, lugs have 45 deg undersides)", True),
     ("column_right", 1, "column_R", [], "none (stands on its foot ring, lugs have 45 deg undersides)", True),
     ("bob_carriage", 1, "carriage", [], "none (frame down, stem up, 45 deg fillet)", False),
     ("lift_yoke", 1, "yoke", [(AX, 180)], "none (flange down, blade up)", False),
     ("lift_lever", 1, "lever", [], "none (flat)", False),
-    ("neck_base_A", 1, "neck_A", [], "YES: small supports under the flange rim (plug down)", False),
+    ("neck_base_A", 1, "neck_A", [], "none (plug down; 45 deg sleeve under the flange and uprights)", False),
     ("neck_rocker_B", 1, "neck_B", [], "none (pivot boss is a short 4.5 mm radius stub)", False),
     ("neck_head_plate_C", 1, "neck_C", [(AX, 180)], "none (plate down, legs up)", False),
     ("head_half_left", 1, "head_L", [(AY, 90)], "YES: crown of the dome (top ~30%) and the collar flange", True),
     ("head_half_right", 1, "head_R", [(AY, -90)], "YES: crown of the dome (top ~30%) and the collar flange", True),
     ("shoulder_socket_right", 1, "socket_R", [(AX, 90)], "none (pocket opens upward)", False),
     ("shoulder_socket_left", 1, "socket_L", [(AX, 90)], "none (pocket opens upward)", False),
-    ("shoulder_cap", 2, "socket_cap", [(AX, -90)], "none (flange down)", True),
+    ("shoulder_cap", 0, "socket_cap", [(AX, -90)], "none (flange down); not needed on the shared base: both shoulder servos stay fitted", True),
     ("arm_horn", 2, "horn", [], "none (disc down)", False),
     ("cloud_former_left", 1, "cloud_L", [(AY, 90)], "YES: puffs and crown; tree supports", True),
     ("cloud_former_right", 1, "cloud_R", [(AY, -90)], "YES: puffs and crown; tree supports", True),
+    ("dummy_core", 5, "dummy_core", [(AX, 180)], "none (collar down, 45 deg cone)", True),
 ]
 
 
@@ -1000,6 +1165,15 @@ def main(skip_check=False):
         for r in rows:
             f.write(",".join([r[0], str(r[1]), f"{r[2]:.1f}", f"{r[3]:.1f}", f"{r[4]:.1f}", f"{r[5]:.1f}", f"{r[6]:.1f}", f"{r[7]:.1f}",
                               '"' + r[8] + '"', str(r[9]), str(r[10])]) + "\n")
+    need = pocket_break_even()
+    with open(os.path.join(OUT_DIR, "base_pockets.csv"), "w", encoding="utf-8") as f:
+        f.write(f"# infill {PS.INFILL:.0%}, skin {PS.skin_mm():.1f} mm: a pocket is cut when volume / new wall area >= {need:.1f} mm\n")
+        f.write("pocket,volume_cm3,ratio_mm,grams_saved,cut\n")
+        for (n, v, ratio, saved, kept) in BASE_POCKETS_REPORT:
+            f.write(f"{n},{v:.1f},{ratio:.1f},{saved:.1f},{'yes' if kept else 'no'}\n")
+    cut = [r for r in BASE_POCKETS_REPORT if r[4]]
+    print(f"base hollowing: {len(cut)} of {len(BASE_POCKETS_REPORT)} pockets cut (break-even {need:.1f} mm), "
+          f"{sum(r[1] for r in cut):.0f} cm3 removed, about {sum(r[3] for r in cut):.0f} g saved at {PS.INFILL:.0%} infill")
     # assembly STLs (rest pose, coarse mesh) for the preview renders
     A = assemble(P, with_cloud=True)
     for k, wp in A.items():

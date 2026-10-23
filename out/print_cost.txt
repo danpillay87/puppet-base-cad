@@ -1,0 +1,64 @@
+Settings (print_settings.py): Bambu Lab H2D, 0.4 mm nozzle, 0.2 mm layers, 3 walls, 5 top/bottom layers, 25% infill, Bambu PLA Basic 1.24 g/cm3 at GBP 20.00/kg, bed 325 x 320 x 325 mm, shrink 0.0%
+Supports add 15% to: head halves, shells, cloud formers and clip-ons. Every other part prints without.
+
+Shared base (Jolly spec, all servos)
+  base_plate               x1   294.7 g each    160 x   160 x    48 mm  
+  turntable                x1    78.3 g each    150 x   150 x    43 mm  
+  turntable_hub            x1     3.4 g each     34 x    34 x     5 mm  
+  column_left              x1    57.1 g each     58 x   116 x   100 mm  
+  column_right             x1    57.1 g each     58 x   116 x   100 mm  
+  bob_carriage             x1    45.2 g each    112 x    77 x    63 mm  
+  lift_yoke                x1     3.1 g each     22 x     7 x    38 mm  
+  lift_lever               x1     2.8 g each     41 x    20 x     5 mm  
+  shoulder_socket_left     x1     9.5 g each     20 x    36 x    23 mm  
+  shoulder_socket_right    x1     9.5 g each     20 x    36 x    23 mm  
+  neck_base_A              x1    39.2 g each     62 x    62 x    58 mm  
+  neck_rocker_B            x1    22.9 g each     50 x    44 x    36 mm  
+  neck_head_plate_C        x1    27.4 g each     88 x    88 x    36 mm  
+  head_half_left           x1    49.6 g each     84 x   122 x    61 mm  supports
+  head_half_right          x1    49.7 g each     84 x   122 x    61 mm  supports
+  arm_horn                 x2     2.9 g each     34 x    20 x     9 mm  
+                                755.3 g  GBP 15.11
+Jolly skin
+  shell_jolly_left         x1    63.4 g each    126 x   144 x    72 mm  supports
+  shell_jolly_right        x1    63.5 g each    126 x   144 x    72 mm  supports
+                                127.0 g  GBP  2.54
+Clawd skin
+  shell_claude_left        x1    62.4 g each    110 x   130 x    98 mm  supports
+  shell_claude_right       x1    62.5 g each    110 x   130 x    98 mm  supports
+                                124.9 g  GBP  2.50
+Cloud skin
+  cloud_former_left        x1    47.5 g each    103 x   131 x    67 mm  supports
+  cloud_former_right       x1    47.6 g each    103 x   131 x    67 mm  supports
+  clip_beret               x1    38.0 g each    118 x   115 x    51 mm  supports
+                                133.2 g  GBP  2.66
+Pear skin
+  shell_pear_left          x1    59.2 g each    126 x   146 x    70 mm  supports
+  shell_pear_right         x1    59.3 g each    126 x   146 x    70 mm  supports
+  clip_glasses_round       x1     3.9 g each    109 x    82 x    26 mm  supports
+                                122.4 g  GBP  2.45
+Frog skin
+  shell_frog_left          x1    49.0 g each    100 x   132 x    71 mm  supports
+  shell_frog_right         x1    49.0 g each    100 x   132 x    71 mm  supports
+                                 98.0 g  GBP  1.96
+Heart skin
+  shell_heart_left         x1    53.7 g each    107 x   132 x    67 mm  supports
+  shell_heart_right        x1    53.8 g each    107 x   132 x    67 mm  supports
+  clip_sunglasses          x1     7.1 g each    138 x    88 x    21 mm  supports
+                                114.7 g  GBP  2.29
+Dummy cores
+  dummy_core               x5    34.0 g each    110 x   110 x    58 mm  
+                                170.1 g  GBP  3.40
+Optional: spare skin rings (not in the totals)
+  skin_ring_1              x1     8.5 g each    110 x   110 x     3 mm  
+  skin_ring_2              x1     8.5 g each    110 x   110 x     3 mm  
+  skin_ring_3              x1     8.5 g each    110 x   110 x     3 mm  
+  skin_ring_4              x1     8.5 g each    110 x   110 x     3 mm  
+                                 34.1 g  GBP  0.68
+
+One base + six skins + five dummy cores:   1645 g, GBP 32.91, about 42-67 h on the Bambu Lab H2D (25-40 g/h, about 7 plates at 6 min set-up each)
+  base set      755 g  GBP 15.11  about 19-30 h
+  six skins     720 g  GBP 14.40  about 18-29 h
+  five cores    170 g  GBP  3.40  about 4-7 h
+Before the shared base (15% infill, so not comparable with these settings): base set 721 g; one shared base + six skins 1481 g; six full toys 5100 g
+Bed: every part fits.

@@ -1,38 +1,39 @@
-STL file,Qty - Option 1 (one test toy: 1 base set + frog shell),Qty - Option 2 (all six toys),Material,Supports,Size mm (x y z),Notes
-base_plate_left.stl,1,6,PLA,none,80 x 160 x 48,
-base_plate_right.stl,1,6,PLA,none,80 x 160 x 48,
-turntable.stl,1,6,PLA,yes - small supports under the plate and cradle window,150 x 150 x 48,
-column_left.stl,1,6,PLA,none,58 x 116 x 100,brim helps
-column_right.stl,1,6,PLA,none,58 x 116 x 100,brim helps
-bob_carriage.stl,1,6,PLA,none,112 x 77 x 63,
-lift_yoke.stl,1,6,PLA,none,22 x 7 x 39,
-lift_lever.stl,1,6,PLA,none,41 x 20 x 5,
-neck_base_A.stl,1,6,PETG (PLA ok for the test set),yes - small supports under the flange rim,62 x 62 x 54,print first for a servo fit check
-neck_rocker_B.stl,1,6,PETG (PLA ok for the test set),none,51 x 44 x 36,
-neck_head_plate_C.stl,1,6,PETG (PLA ok for the test set),none,88 x 88 x 36,
-head_half_left.stl,1,6,PLA,yes - crown of the dome and the collar flange,84 x 122 x 61,brim helps
-head_half_right.stl,1,6,PLA,yes - crown of the dome and the collar flange,84 x 122 x 61,brim helps
-shoulder_socket_left.stl,1,6,PLA,none,20 x 36 x 23,print one first for a servo fit check
-shoulder_socket_right.stl,1,6,PLA,none,20 x 36 x 23,
-shoulder_cap.stl,2,10,PLA,none,20 x 36 x 10,2 per round character (blanks the shoulder); none on the yeti
-arm_horn.stl,0,2,PLA,none,34 x 20 x 9,yeti only
-skin_ring_1.stl,1,1,PLA,none,110 x 110 x 3,one ring per shell
-skin_ring_2.stl,0,1,PLA,none,110 x 110 x 3,
-skin_ring_3.stl,0,1,PLA,none,110 x 110 x 3,
-skin_ring_4.stl,0,1,PLA,none,110 x 110 x 3,
+STL file,Qty - Option 1 (one test toy: the shared base set + Frog skin),Qty - Option 2 (one shared base + six skins + five dummy cores),Material,Supports,Size mm (x y z),Notes
+base_plate.stl,1,1,PLA,none,160 x 160 x 48,"one piece (replaces base_plate_left/right); at 25% infill 5 of the 10 open-top pockets are cut (two big wells plus the voids under the ESP32, PCA9685 and buck-converter bays), about 40 g saved"
+turntable.stl,1,1,PLA,none,150 x 150 x 43,plate down; servo slot open at the top
+turntable_hub.stl,1,1,PLA,none,34 x 34 x 5,floor down; 4x M2 x 8 through the yaw horn
+column_left.stl,1,1,PLA,none,58 x 116 x 100,brim helps
+column_right.stl,1,1,PLA,none,58 x 116 x 100,brim helps
+bob_carriage.stl,1,1,PLA,none,112 x 77 x 63,
+lift_yoke.stl,1,1,PLA,none,22 x 7 x 38,
+lift_lever.stl,1,1,PLA,none,41 x 20 x 5,
+neck_base_A.stl,1,1,PETG (PLA ok for the test set),none,62 x 62 x 58,plug down; 45 deg sleeve and skirt; 2x M3 x 10 cross screws; print first for a servo fit check
+neck_rocker_B.stl,1,1,PETG (PLA ok for the test set),none,50 x 44 x 36,
+neck_head_plate_C.stl,1,1,PETG (PLA ok for the test set),none,88 x 88 x 36,
+head_half_left.stl,1,1,PLA,yes - crown of the dome and the collar flange,84 x 122 x 61,brim helps
+head_half_right.stl,1,1,PLA,yes - crown of the dome and the collar flange,84 x 122 x 61,brim helps
+shoulder_socket_left.stl,1,1,PLA,none,20 x 36 x 23,MG90S; print one first for a servo fit check
+shoulder_socket_right.stl,1,1,PLA,none,20 x 36 x 23,MG90S
+shoulder_cap.stl,0,0,PLA,none,20 x 36 x 10,not needed: the shared base keeps both shoulder servos fitted
+arm_horn.stl,0,2,PLA,none,34 x 20 x 9,Jolly's arms; part of the base set; take off for armless skins
+dummy_core.stl,0,5,PLA,none,110 x 110 x 58,collar down; holds a resting skin on the shelf; 34 g; magnets optional
+skin_ring_1.stl,1,1,PLA,none,110 x 110 x 3,optional; not in the plastic totals
+skin_ring_2.stl,0,1,PLA,none,110 x 110 x 3,optional; not in the plastic totals
+skin_ring_3.stl,0,1,PLA,none,110 x 110 x 3,optional; not in the plastic totals
+skin_ring_4.stl,0,1,PLA,none,110 x 110 x 3,optional; not in the plastic totals
 shell_frog_left.stl,1,1,PLA,yes - eye domes and cheeks (tree supports),100 x 132 x 71,hollow 1.5 mm wall: 3 walls 0-5% infill
 shell_frog_right.stl,1,1,PLA,yes - eye domes and cheeks (tree supports),100 x 132 x 71,hollow 1.5 mm wall: 3 walls 0-5% infill
 shell_heart_left.stl,0,1,PLA,yes - both lobes (tree supports),107 x 132 x 67,hollow 1.5 mm wall
 shell_heart_right.stl,0,1,PLA,yes - both lobes (tree supports),107 x 132 x 67,hollow 1.5 mm wall
-shell_pear_left.stl,0,1,PLA,yes - crown and stalk (tree supports),127 x 146 x 70,hollow 1.5 mm wall
-shell_pear_right.stl,0,1,PLA,yes - crown and stalk (tree supports),127 x 146 x 70,hollow 1.5 mm wall
+shell_pear_left.stl,0,1,PLA,yes - crown and stalk (tree supports),126 x 146 x 70,hollow 1.5 mm wall
+shell_pear_right.stl,0,1,PLA,yes - crown and stalk (tree supports),126 x 146 x 70,hollow 1.5 mm wall
 shell_jolly_left.stl,0,1,PLA,yes - hood peak and hem rim (tree supports),126 x 144 x 72,hollow 1.5 mm wall
 shell_jolly_right.stl,0,1,PLA,yes - hood peak and hem rim (tree supports),126 x 144 x 72,hollow 1.5 mm wall
-shell_claude_left.stl,0,1,PLA,yes - the flat roof (inside of the outer side wall) and the arm ends (tree supports),110 x 130 x 98,"hollow 1.0 mm wall (thinner than the other shells; two perimeters, brim); Clawd (Claude) shell, pair about 109 g; the four legs are soft fleece, not printed"
+shell_claude_left.stl,0,1,PLA,yes - the flat roof (inside of the outer side wall) and the arm ends (tree supports),110 x 130 x 98,"hollow 1.0 mm wall (thinner than the other shells; two perimeters, brim); Clawd (Claude) shell; the four legs are soft fleece, not printed"
 shell_claude_right.stl,0,1,PLA,yes - the flat roof (inside of the outer side wall) and the arm ends (tree supports),110 x 130 x 98,hollow 1.0 mm wall
 cloud_former_left.stl,0,1,PLA,yes - puffs and crown (tree supports),103 x 131 x 67,the cloud character's shell
 cloud_former_right.stl,0,1,PLA,yes - puffs and crown (tree supports),103 x 131 x 67,the cloud character's shell
-clip_beret.stl,0,1,PLA,yes - under the saucer,119 x 115 x 51,
-clip_glasses_round.stl,0,1,PLA,none,122 x 36 x 90,
-clip_sunglasses.stl,0,1,PLA,none,122 x 32 x 90,
-TOTAL pieces,20,121,,,,Option 1 about 550-630 g; Option 2 about 3.5-4 kg. 0.2 mm layers; 3 walls; 15-20% infill on structural parts.
+clip_beret.stl,0,1,PLA,yes - under the saucer,118 x 115 x 51,
+clip_glasses_round.stl,0,1,PLA,yes - light tree supports under the lower rims and temple bands,109 x 82 x 26,Pear
+clip_sunglasses.stl,0,1,PLA,yes - light tree supports under the lens plates and temple bands,138 x 88 x 21,Heart
+TOTAL pieces,18,41,,,,"Option 1 about 853 g, GBP 17.07 (about 22-34 printer hours on the H2D); Option 2 about 1,645 g, GBP 32.91 at GBP 20/kg (about 42-67 hours). Rings add 8.5 g each. Figures from print_cost.py with print_settings.py: Bambu Lab H2D (325 x 320 x 325 mm, every part fits; a 220 x 220 bed would also fit), 0.4 mm nozzle, 0.2 mm layers, 3 walls, 25% infill, Bambu PLA Basic at GBP 20/kg; the slicer's estimate wins. Shrink compensation is still to be agreed with Andy; the parts are drawn true size."

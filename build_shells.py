@@ -46,14 +46,17 @@ ARM_SLOT_LEN = 122.0                          # stop at the sleeve length, so th
 HOOD_RING_R = 42.0                            # radius of the hood's face opening (viewed from the front)
 HOOD_TUBE_R = 3.0                             # thickness of the hood edge ridge
 
-# round glasses / sunglasses (clip around the head sphere like spectacles)
-G_ZC = ZC + 10.0                              # lens centre height
-G_Y0, G_Y1 = 61.6, 64.6                       # front frame sits 0.6 mm clear of the equator bead (bead outer radius 61)
-G_ARC_RIN, G_ARC_ROUT = 58.6, 61.0            # temple arcs: inner radius a touch under the sphere (springy grip)
-G_ARC_Z0, G_ARC_Z1 = G_ZC - 4.0, G_ZC + 4.0   # temple band is 8 mm tall
-G_ARC_END = 115.0                             # degrees round from the front: past the widest point = the hook behind the head
-ROUND_R_OUT, ROUND_R_IN, ROUND_X = 18.0, 15.0, 21.0     # round rims: centre spacing 42
-SUN_W, SUN_H, SUN_R, SUN_X = 46.0, 32.0, 10.0, 24.0     # sunglass lens plates
+# round glasses (worn by Pear) / sunglasses (worn by Heart). They clip onto the SHELL, not the bare head, so each one is built
+# from its wearer's blobs: every piece is a thin skin lying CLIP_GAP off the shell surface, and the front outline is pushed
+# straight back along -Y onto that skin. Seen from the front the rims are true circles (the stage look); the frame follows the face.
+CLIP_GAP = 0.3                                # clearance between the clip and the shell surface
+CLIP_T = 2.0                                  # thickness of the frame skin
+TEMPLE_H = 5.0                                # temple band height
+TEMPLE_END = 115.0                            # degrees round from the front: past the widest point = the hook behind
+GLASSES_ZC = ZC + 39.0                        # Pear's eye height: 60% of the way up the shell, where it is 72% of its widest (stage cut-out: 60%, 72%)
+ROUND_R_OUT, ROUND_R_IN, ROUND_X = 13.0, 10.8, 17.3     # round rims 26 mm across, centres 34.6 apart (stage: 18% and 25% of Pear's width)
+SUN_ZC = ZC + 32.0                            # Heart: 56% of the way up, across the middle of the heart (stage cut-out: 56%)
+SUN_W, SUN_H, SUN_R, SUN_X = 31.6, 21.0, 7.0, 19.0      # lens plates 24% x 16% of Heart's width, centres 28% apart (stage)
 
 # beret (friction-fit cap + flat saucer)
 BERET_RIM_DZ = 22.0                           # cap rim height above the head centre (rim polar angle about 70 degrees)
@@ -303,13 +306,11 @@ def build_claude():
 # =====================================================================================
 # clip-ons
 # =====================================================================================
-def sector(r_in, r_out, phi0, phi1, z0, z1):
-    """Annular sector: azimuth measured from +Y (front) toward +X, in degrees."""
-    ring = B.cylz(0, 0, z0, z1, r_out).cut(B.cylz(0, 0, z0 - 1, z1 + 1, r_in))
+def wedge(phi0, phi1, z0, z1):
+    """Pie slice about the Z axis between two azimuths (degrees, measured from +Y (front) toward +X), from z0 to z1."""
     p0, p1 = math.radians(phi0), math.radians(phi1)
     pts = [(0, 0), (300 * math.sin(p0), 300 * math.cos(p0)), (300 * math.sin(p1), 300 * math.cos(p1))]
-    wedge = cq.Workplane("XY").workplane(offset=z0 - 0.5).polyline(pts).close().extrude(z1 - z0 + 1.0)
-    return ring.intersect(wedge)
+    return cq.Workplane("XY").workplane(offset=z0).polyline(pts).close().extrude(z1 - z0)
 
 
 def rrect_y(y0, y1, cx, cz, w, h, r):
@@ -318,29 +319,39 @@ def rrect_y(y0, y1, cx, cz, w, h, r):
             .edges("|Y").fillet(r))
 
 
-def temple_right(x_out, x_in_block):
-    """Right temple: a short straight arm from the front frame back to the head, then an arc round the side of the head
-    that ends 115 degrees round, behind the widest point (the hook that keeps the glasses on)."""
-    y_arc = math.sqrt(G_ARC_ROUT ** 2 - x_out ** 2)
-    connector = B.box(x_in_block, x_out + 1.2, G_Y0, G_Y1, G_ARC_Z0, G_ARC_Z1)
-    arm = B.box(x_out - 1.2, x_out + 1.2, y_arc - 2.0, G_Y1 - 0.5, G_ARC_Z0, G_ARC_Z1)
-    phi0 = math.degrees(math.asin(x_out / G_ARC_ROUT)) - 6.0
-    arc = sector(G_ARC_RIN, G_ARC_ROUT, phi0, G_ARC_END, G_ARC_Z0, G_ARC_Z1)
-    return B.union_all([connector, arm, arc])
+def clip_skin(blobs):
+    """A CLIP_T thick layer lying CLIP_GAP off the outside of a blob shell: every spheroid grown by the gap, minus the same
+    spheroids grown by the gap plus the thickness. A clip-on is the part of this skin under its outline, so it is flush."""
+    def grown(d):
+        return B.union_all([B.spheroid(b[0], b[1], b[2], b[3] + d, b[4] + d) for b in blobs])
+    return grown(CLIP_GAP + CLIP_T).cut(grown(CLIP_GAP))
+
+
+def temple_band(skin, x_start, zc):
+    """Right temple: the TEMPLE_H tall strip of the skin centred at height zc, from x_start (inside the outer edge of the right
+    lens) round the side of the shell to TEMPLE_END degrees, behind the widest point (the hook that keeps the clip on)."""
+    z0, z1 = zc - TEMPLE_H / 2, zc + TEMPLE_H / 2
+    return skin.intersect(wedge(0.0, TEMPLE_END, z0, z1)).intersect(B.box(x_start, 300, -300, 300, z0, z1))
 
 
 def build_glasses_round():
-    rim = B.cyly(G_Y0, G_Y1, ROUND_X, G_ZC, ROUND_R_OUT).cut(B.cyly(G_Y0 - 1, G_Y1 + 1, ROUND_X, G_ZC, ROUND_R_IN))
-    right = rim.union(temple_right(ROUND_X + ROUND_R_OUT + 1.2, ROUND_X + ROUND_R_OUT - 2.5))
-    bridge = B.box(-ROUND_X + ROUND_R_OUT - 1.0, ROUND_X - ROUND_R_OUT + 1.0, G_Y0, G_Y1, G_ZC + 3.0, G_ZC + 6.0)
-    return right.union(right.mirror("YZ")).union(bridge)
+    """Round glasses for Pear: two rims and a bridge on the front of the Pear shell at its eye height, temples round the sides."""
+    skin, zc = clip_skin(pear_blobs()), GLASSES_ZC
+    rims = [B.cyly(0, 200, sx * ROUND_X, zc, ROUND_R_OUT).cut(B.cyly(-1, 201, sx * ROUND_X, zc, ROUND_R_IN)) for sx in (-1, 1)]
+    bridge = B.box(-ROUND_X + ROUND_R_IN + 0.3, ROUND_X - ROUND_R_IN - 0.3, 0, 200, zc - 1.2, zc + 1.2)
+    front = skin.intersect(B.union_all(rims + [bridge]))   # one cut of the skin (a bridge fused on afterwards gives a bad solid)
+    temple = temple_band(skin, ROUND_X + ROUND_R_IN + 0.6, zc)
+    return front.union(temple).union(temple.mirror("YZ"))
 
 
 def build_glasses_sun():
-    lens = rrect_y(G_Y0, G_Y1, SUN_X, G_ZC, SUN_W, SUN_H, SUN_R)
-    right = lens.union(temple_right(SUN_X + SUN_W / 2 + 1.2, SUN_X + SUN_W / 2 - 3.0))
-    bridge = B.box(-SUN_X + SUN_W / 2 - 1.0, SUN_X - SUN_W / 2 + 1.0, G_Y0, G_Y1, G_ZC + 5.0, G_ZC + 10.0)
-    return right.union(right.mirror("YZ")).union(bridge)
+    """Sunglasses for Heart: two lens plates joined at the top across the middle of the Heart shell, temples round the sides."""
+    skin, zc = clip_skin(heart_blobs()), SUN_ZC
+    lenses = [rrect_y(0, 200, sx * SUN_X, zc, SUN_W, SUN_H, SUN_R) for sx in (-1, 1)]
+    bridge = B.box(-8.0, 8.0, 0, 200, zc + SUN_H / 2 - 5.5, zc + SUN_H / 2 - 1.5)
+    front = skin.intersect(B.union_all(lenses + [bridge]))
+    temple = temple_band(skin, SUN_X + SUN_W / 2 - 2.0, zc + 2.0)
+    return front.union(temple).union(temple.mirror("YZ"))
 
 
 def build_beret():
@@ -380,14 +391,14 @@ SUPPORT_NOTES = {
     "jolly": "YES: hood peak, shoulder flank slots and the rim of the open hem; tree supports (lies on its split face)",
     "claude": "YES: the flat roof of the body (the inside of the outer side wall) and the flat end of each stub arm, plus the rounded top and bottom edges; tree supports (lies on its split face). 1.0 mm wall",
     "beret": "YES: underside of the saucer (print crown-down on the stalk with tree supports, or rim-down with supports under the saucer)",
-    "glasses": "none (front face down: rims flat, temple arcs stand up as thin walls)",
-    "sunglasses": "none (front face down: lens plates flat, temple arcs stand up as thin walls)",
+    "glasses": "YES: light tree supports under the lower rims and the temple bands (print it the way Pear wears it; the curved frame leans back about 38 degrees, inside the 45 degree rule)",
+    "sunglasses": "YES: light tree supports under the lens plates and the temple bands (print it the way Heart wears it; the curved frame leans back about 30 degrees, inside the 45 degree rule)",
 }
 
 SINGLE_ROT = {
     "beret": [(AX, 180)],                      # crown down
-    "glasses": [(AX, -90)],                    # front face (+Y) down
-    "sunglasses": [(AX, -90)],
+    "glasses": [],                             # as worn: the curved frame cannot lie flat
+    "sunglasses": [],
 }
 HALF_ROT = {"left": [(AY, 90)], "right": [(AY, -90)]}    # split face down, like the head halves
 
@@ -511,10 +522,13 @@ def render_preview(head_full):
         if key == "claude":                                 # the four soft (sewn, not printed) legs, drawn see-through under the body
             items.append(("claude_legs", None, "softlegs", x, 0.0, os.path.join(asm, "claude_legs.stl")))
         x -= step
-    row2 = [("beret", "beret"), ("glasses", "glasses"), ("sunglasses", "sunglasses")]
+    row2 = [("beret", "beret", None), ("glasses", "glasses", "pear"), ("sunglasses", "sunglasses", "heart")]
     x = 175.0
-    for key, ck in row2:
-        items.append(("head_" + key, head_full, "head", x, -200.0, None))
+    for key, ck, wearer in row2:                            # the beret on the bare head; the glasses on the shell they are built for
+        if wearer is None:
+            items.append(("head_" + key, head_full, "head", x, -200.0, None))
+        else:
+            items.append(("wearer_" + key, None, wearer, x, -200.0, os.path.join(asm, wearer + ".stl")))
         items.append((key, None, ck, x, -200.0, os.path.join(asm, key + ".stl")))
         x -= 175.0
     ren = vtk.vtkRenderer()
@@ -553,7 +567,7 @@ def render_preview(head_full):
         a.GetProperty().SetSpecular(0.25)
         ren.AddActor(a)
     txt = vtk.vtkTextActor()
-    txt.SetInput("Top: cloud, pear, frog, heart, hooded Jolly, Clawd (Claude) shells.   Bottom: beret, round glasses, sunglasses on the bare head.\n"
+    txt.SetInput("Top: cloud, pear, frog, heart, hooded Jolly, Clawd (Claude) shells.   Bottom: beret on the bare head, round glasses on Pear, sunglasses on Heart.\n"
                  "Clawd's four legs are soft sewn fleece, not printed, so they are drawn see-through.")
     txt.GetTextProperty().SetFontSize(24)
     txt.GetTextProperty().SetColor(0.1, 0.1, 0.15)

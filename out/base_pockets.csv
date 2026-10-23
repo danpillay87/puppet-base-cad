@@ -1,0 +1,12 @@
+# infill 25%, skin 1.2 mm: a pocket is cut when volume / new wall area >= 3.6 mm
+pocket,volume_cm3,ratio_mm,grams_saved,cut
+pocket 1,10.5,2.0,-2.7,no
+pocket 2,85.4,3.7,0.8,yes
+pocket 3,0.3,0.2,-1.8,no
+pocket 4,7.8,2.7,-0.8,no
+pocket 5,165.4,6.5,23.0,yes
+pocket 6,10.8,3.1,-0.5,no
+pocket 7,6.8,1.5,-3.1,no
+under pca9685,35.8,8.8,6.5,yes
+under esp32,35.8,9.1,6.7,yes
+under buck,20.6,6.8,3.0,yes
