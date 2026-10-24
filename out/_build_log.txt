@@ -1,4 +1,4 @@
-﻿base_plate               x1   160.1 x  160.1 x   48.1 mm    390.4 cm3   121.0 g (25%)   484.2 g (solid)   0.54 MB  supports: none (one piece; pockets open on top; speaker/jack holes bridge by a few mm)
+﻿base_plate               x1   160.1 x  160.1 x   48.1 mm    396.2 cm3   122.8 g (25%)   491.3 g (solid)   0.54 MB  supports: none (one piece; pockets open on top; speaker/jack holes bridge by a few mm)
 turntable                x1   150.0 x  150.1 x   43.2 mm     99.1 cm3    30.7 g (25%)   122.9 g (solid)   0.46 MB  supports: none (plate down, cradle up; servo slot open at the top)
 turntable_hub            x1    34.0 x   34.0 x    5.2 mm      2.7 cm3     0.8 g (25%)     3.4 g (solid)   0.16 MB  supports: none (floor down)
 column_left              x1    58.1 x  116.1 x  100.1 mm     46.8 cm3    14.5 g (25%)    58.0 g (solid)   0.24 MB  supports: none (stands on its foot ring, lugs have 45 deg undersides)
@@ -22,6 +22,8 @@ skin_ring_1              x1   110.0 x  110.0 x    3.2 mm      6.9 cm3     2.1 g 
 skin_ring_2              x1   110.0 x  110.0 x    3.2 mm      6.9 cm3     2.1 g (25%)     8.5 g (solid)   0.32 MB  supports: none (flat)
 skin_ring_3              x1   110.0 x  110.0 x    3.2 mm      6.9 cm3     2.1 g (25%)     8.5 g (solid)   0.33 MB  supports: none (flat)
 skin_ring_4              x1   110.0 x  110.0 x    3.2 mm      6.9 cm3     2.1 g (25%)     8.5 g (solid)   0.34 MB  supports: none (flat)
-base hollowing: 5 of 10 pockets cut (break-even 3.6 mm), 343 cm3 removed, about 40 g saved at 25% infill
+base hollowing: 5 of 10 pockets cut (break-even 3.6 mm), 337 cm3 removed, about 38 g saved at 25% infill
 assembly pose STLs written: 21
 overall height, head top (rest pose): 311.0 mm; bob throw 33.9 mm; head collar z 227.0
+gimbal / head interference check over bob {0, max} x nod {-30,0,+30} x tilt {-25,0,+25}:
+  worst overlap mm3: 0.0

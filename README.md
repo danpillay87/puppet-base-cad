@@ -110,11 +110,11 @@ top and bottom layers, 25% infill, supports allowance) part by part.
 
 From `out/print_cost.txt` (model estimate at the settings below; the slicer on Andy's printer wins):
 
-- Shared base set: 755.3 g, GBP 15.11, about 19 to 30 printer hours. 16 files, 17 pieces: `base_plate` 294.7 g, `turntable` 78.3, `turntable_hub` 3.4, `column_left` 57.1, `column_right` 57.1, `bob_carriage` 45.2, `lift_yoke` 3.1, `lift_lever` 2.8, `shoulder_socket_left` 9.5, `shoulder_socket_right` 9.5, `neck_base_A` 39.2, `neck_rocker_B` 22.9, `neck_head_plate_C` 27.4, `head_half_left` 49.6, `head_half_right` 49.7, `arm_horn` 2 x 2.9.
+- Shared base set: 756.9 g, GBP 15.14, about 19 to 30 printer hours. 16 files, 17 pieces: `base_plate` 296.4 g, `turntable` 78.3, `turntable_hub` 3.4, `column_left` 57.1, `column_right` 57.1, `bob_carriage` 45.2, `lift_yoke` 3.1, `lift_lever` 2.8, `shoulder_socket_left` 9.5, `shoulder_socket_right` 9.5, `neck_base_A` 39.2, `neck_rocker_B` 22.9, `neck_head_plate_C` 27.4, `head_half_left` 49.6, `head_half_right` 49.7, `arm_horn` 2 x 2.9.
 - Skins: Jolly 127.0 g (GBP 2.54), Clawd 124.9 g (2.50), Cloud 133.2 g (2.66, formers plus beret), Pear 122.4 g (2.45, with the round glasses), Frog 98.0 g (1.96), Heart 114.7 g (2.29, with the sunglasses). The six skins come to 720 g, GBP 14.40, about 18 to 29 printer hours.
 - Dummy cores: 5 x 34.0 g = 170.1 g, GBP 3.40 (GBP 0.68 each), about 4 to 7 printer hours.
 - Optional spare skin rings 1 to 4: 8.5 g each, not in the totals.
-- Total, one base plus six skins plus five dummy cores: about 1,645 g (1.65 kg), GBP 32.91 of filament at GBP 20/kg, and about 42 to 67 printer hours on the H2D (25 to 40 g/h, about 7 plates at 6 minutes set-up each; a guide only).
+- Total, one base plus six skins plus five dummy cores: about 1,647 g (1.65 kg), GBP 32.94 of filament at GBP 20/kg, and about 42 to 67 printer hours on the H2D (25 to 40 g/h, about 7 plates at 6 minutes set-up each; a guide only).
 - Before the shared base, at the old 15% infill (so not comparable with the figures above): base set 721 g, one shared base plus six skins 1,481 g, and six full toys each with its own base 5,100 g.
 
 Dummy core (`dummy_core`): a cheap, light printed former, 110 x 110 x 58 mm, 34 g, about GBP 0.68 each, printed collar down without supports. The five skins that are not on the base sit on a core on the shelf so they keep their shape. Print 5. Checked: zero overlap with all six skins. It has six magnet pockets like the head; magnets in the cores are optional.

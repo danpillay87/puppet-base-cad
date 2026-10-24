@@ -1,8 +1,8 @@
 # Six controllable toys: build spec
 
-17 Oct 2026, Dan. Rev 15, exported 18 Oct 2026 as a backup of the working spec. Rev 16, 20 Oct: Claude added as a sixth toy, with a six-toy parts and materials costing. Rev 17, 20 Oct evening: Claude redrawn as Clawd, the Claude Code mascot. Rev 18, 23 Oct: one shared base for all six toys, costed and printed as one base plus six skins plus five dummy cores. Rev 19, 23 Oct: Andy prints the parts on a Bambu Lab H2D, so the print figures are redone at 25% infill and £20/kg, and the voice and software sections are rewritten for the one base. Images are in docs/images.
+17 Oct 2026, Dan. Rev 15, exported 18 Oct 2026 as a backup of the working spec. Rev 16, 20 Oct: Claude added as a sixth toy, with a six-toy parts and materials costing. Rev 17, 20 Oct evening: Claude redrawn as Clawd, the Claude Code mascot. Rev 18, 23 Oct: one shared base for all six toys, costed and printed as one base plus six skins plus five dummy cores. Rev 19, 23 Oct: Andy prints the parts on a Bambu Lab H2D, so the print figures are redone at 25% infill and £20/kg, and the voice and software sections are rewritten for the one base. Rev 20, 23 Oct evening: no fabric in the first build; the shells are printed in colour or painted, and fur is decided later for Jolly only. Images are in docs/images.
 
-Six Wi-Fi animatronic toys as skins on one shared servo base: Jolly (Meta's plush yeti, a body with arms), four OpenAI dots (fuzzy blobs, built as motorised bobblehead bodies with no arms) and Claude (Clawd). The base is built to Jolly's spec with the full set of servos, so every skin swaps onto it. Everything is printed, base and character shells alike, with fur or fleece glued over for the fuzzy look. The base carries the ESP32; one MCP server we write drives it, so an AI agent can turn, nod, bounce or wave whichever skin is on. Budget: about £192 for the one base and all six skins (shopping list below, 20 Oct prices, nothing bought). This page is for Andy, who prints the parts: what the toys are, what moves, and what we would like printed.
+Six Wi-Fi animatronic toys as skins on one shared servo base: Jolly (Meta's plush yeti, a body with arms), four OpenAI dots (fuzzy blobs, built as motorised bobblehead bodies with no arms) and Claude (Clawd). The base is built to Jolly's spec with the full set of servos, so every skin swaps onto it. Everything is printed, base and character shells alike. The first build has no fabric: the shells are printed in colour or painted, and fur may come later for Jolly only. The base carries the ESP32; one MCP server we write drives it, so an AI agent can turn, nod, bounce or wave whichever skin is on. Budget: about £135 for the one base and all six skins, plus paint if used (shopping list below, 20 Oct prices, nothing bought). This page is for Andy, who prints the parts: what the toys are, what moves, and what we would like printed.
 
 ![The five toys as they should read on the desk: Jolly plus the four dots. Concept render, 17 Oct.](images/01-five-toys-concept.png)
 
@@ -19,19 +19,19 @@ All six share one printed base, built to Jolly's spec with all six servos. Jolly
 | 3 | Dot: pear | Yellow pear or rounded triangle with glasses | Bobblehead body | No | Eyes, bounce and squash, lean |
 | 4 | Dot: frog | Green rounded frog blob | Bobblehead body | No | Eyes, bounce and squash, lean |
 | 5 | Dot: heart | Pink heart with sunglasses | Bobblehead body | No | Eyes, bounce and squash, lean |
-| 6 | Claude (added 20 Oct) | Clawd, the Claude Code mascot, as a terracotta fleece plush: boxy body, two stub arms out to the sides, four stubby legs, dot eyes, no mouth | Bobblehead body | No (stub arms are fixed) | Eyes, bounce and squash, lean |
+| 6 | Claude (added 20 Oct) | Clawd, the Claude Code mascot, in terracotta: boxy body, two stub arms out to the sides, four stubby legs (left off in the first build), dot eyes, no mouth | Bobblehead body | No (stub arms are fixed) | Eyes, bounce and squash, lean |
 
 Target size: 30 to 35 cm tall for Jolly, about 25 cm tall and wide for each dot. Neither character has a mouth, so there is no jaw mechanism. Jolly and the dots are Meta and OpenAI characters, and Claude is Anthropic's, so these are for personal and demo use only.
 
 ## Sixth toy: Claude (added 20 Oct)
 
-Claude joins as a sixth toy, built like the four dots: the same shared base, arm horns off (both shoulder servos stay fitted), no moving arms. Only the shell and the fleece are new.
+Claude joins as a sixth toy, built like the four dots: the same shared base, arm horns off (both shoulder servos stay fitted), no moving arms. Only the shell is new.
 
 ![Claude as Clawd, concept render, 20 Oct](images/05-claude-character-concept.png)
 
 *Claude as Clawd, concept render, 20 Oct*
 
-The character is Clawd, the Claude Code mascot, made plush (changed on the evening of 20 Oct from an earlier starburst design based on Claude's spark logo). It has a chunky rounded box body, two short stub arms sticking straight out at the sides, and four stubby legs underneath. It has two black bead eyes, no mouth and no accessory, because the outline is the identity. The arms are fixed, part of the printed shell. The skin is short terracotta anti-pill fleece (about #C96A4A) glued over the shell, not long-pile fur, so the boxy edges stay crisp.
+The character is Clawd, the Claude Code mascot, made plush (changed on the evening of 20 Oct from an earlier starburst design based on Claude's spark logo). It has a chunky rounded box body, two short stub arms sticking straight out at the sides, and four stubby legs underneath. It has two black bead eyes, no mouth and no accessory, because the outline is the identity. The arms are fixed, part of the printed shell. In the first build the shell is printed in terracotta (about #C96A4A) or painted, with no fabric, so the boxy edges stay crisp.
 
 ![All six on the desk, concept render, 20 Oct](images/06-six-toys-concept.png)
 
@@ -39,24 +39,24 @@ The character is Clawd, the Claude Code mascot, made plush (changed on the eveni
 
 In software it is the sixth character: the same moves as a dot, with its own voice and personality profile.
 
-![CAD preview: Clawd's shell on the base, at rest, then bobbed up 34 mm with 20 degrees of nod and tilt; the see-through legs are soft fleece](images/07-claude-cad-preview.png)
+![CAD preview: Clawd's shell on the base, at rest, then bobbed up 34 mm with 20 degrees of nod and tilt; the see-through legs are the optional soft legs, left off in the first build](images/07-claude-cad-preview.png)
 
-*CAD preview: Clawd's shell on the base, at rest, then bobbed up 34 mm with 20 degrees of nod and tilt; the see-through legs are soft fleece*
+*CAD preview: Clawd's shell on the base, at rest, then bobbed up 34 mm with 20 degrees of nod and tilt; the see-through legs are the optional soft legs, left off in the first build*
 
-**CAD (20 Oct, redrawn as Clawd):** the Claude shell is exported as two STL halves, `shell_claude_left` and `shell_claude_right` (39 STLs in the set now, counting the two superseded `base_plate_left` and `base_plate_right` files). It is a rounded box over the head with a hollow stub arm on each side. The four legs are soft sewn fleece on the skin, not printed.
+**CAD (20 Oct, redrawn as Clawd):** the Claude shell is exported as two STL halves, `shell_claude_left` and `shell_claude_right` (39 STLs in the set now, counting the two superseded `base_plate_left` and `base_plate_right` files). It is a rounded box over the head with a hollow stub arm on each side. The four legs are not printed: the first build leaves them off, and soft legs (fleece or felt) can be sewn on later.
 
 - Size: 196 mm wide across the arms, 130 mm deep and 110 mm tall. The body is 126 × 130 × 110 mm with rounded edges. Each arm sticks out 35 mm and is 37 mm tall. The four legs are 22 × 30 mm and hang 28 mm below. Each half prints at 110 × 130 × 98 mm, so it fits the A1 mini.
 - Wall: 1.0 mm, not the usual 1.5 mm. A box round the 120 mm head has much more surface than a sphere, so 1.5 mm walls take the head to about 277 g, over the 250 g budget. At 1.0 mm the pair is about 109 g near-solid, 27 g at normal shell settings, and the head is about 231 g, just under Jolly's 233 g. Use a brim and expect the first print to be fragile.
 - Why soft legs: printed legs ended within 0 to 7 mm of the neck at full nod and tilt, and they would add about 18 g.
 - Fit: the shell clears the base by at least 10.6 mm at full nod and full tilt, bobbed up or down. Re-run on 23 Oct against the new base and unchanged (10.56 mm to neck base A).
-- Leg check: the soft legs can still brush the neck gimbal. The outer pair is 5 mm clear at rest and touches at full nod and tilt. The inner pair sits over the neck at full length. Stuff them lightly, or make the inner two short flat pads, and test with real fleece.
+- Leg check, if the soft legs are added later: they can still brush the neck gimbal. The outer pair is 5 mm clear at rest and touches at full nod and tilt. The inner pair sits over the neck at full length. Stuff them lightly, or make the inner two short flat pads, and test with real fleece.
 - Printing: tree supports, about 15% of the surface overhangs (Jolly 15.8%). The roof, the arm ends and the rounded edges need them.
 
 Not test-printed yet; the clearances are CAD distances with no allowance for print tolerance.
 
 ## What moves
 
-The one shared base carries six servos: 2 × MG996R (turn and bounce) and 4 × MG90S (nod, tilt and the two shoulders). Every skin gets turn, bounce, nod and tilt; both shoulder servos stay fitted, and the arms (printed horns and wire) go on only for Jolly. Nothing else moves; eyes are printed, embroidered or LED matrices behind the fabric.
+The one shared base carries six servos: 2 × MG996R (turn and bounce) and 4 × MG90S (nod, tilt and the two shoulders). Every skin gets turn, bounce, nod and tilt; both shoulder servos stay fitted, and the arms (printed horns and wire) go on only for Jolly. Nothing else moves; eyes are printed discs, with LED matrices as a later add-on.
 
 | Motion | Mechanism | Servo | Range | On which toys |
 | --- | --- | --- | --- | --- |
@@ -76,7 +76,7 @@ The MG90S has the same body and tabs as the MG90D the CAD was first drawn for, b
 
 *CAD preview: the base bobbed up 34 mm, head nodded and tilted 20 degrees, arms raised*
 
-**CAD status (17 Oct, evening; updated 23 Oct):** the whole base is drawn in CadQuery and exported as 39 print-ready STL files: a one-piece base plate (160 × 160 × 48 mm; the old `base_plate_left` and `base_plate_right` files are superseded and not printed), turntable with the 72 mm bearing seat and a separate 34 × 34 × 5 mm turntable hub (`turntable_hub`, 3.4 g, so the turntable prints without supports), torso column with the bob carriage and lift lever, three-part neck gimbal (neck base A redesigned to print without supports, with a 45 degree sleeve and skirt and M3 × 10 cross screws in counterbores), head sphere halves with the 110 mm collar and six magnet pockets, four optional skin rings, shoulder sockets and arm horns (the shoulder caps are no longer printed; `shoulder_cap` stays in the code at 0 copies), a dummy core, plus the six character shells (cloud, pear, frog, heart, Jolly, Claude) and the beret, round glasses and sunglasses clip-ons. Height 311 mm, bob throw 34 mm. One shared base set is about 755 g of filament (model estimate, 25% infill), each skin 98 to 133 g. All the hidden parts print without supports; only the head halves, the shells, the Cloud formers and the clip-ons need them. One thing to check before any real print: servo and bearing pocket sizes are from datasheets, not measured, so print one shoulder socket and the neck base first. **Jolly hood fixed (21:10):** the hood's open lower edge was raised from 58 mm below the head centre to 26 mm, so it is now a 126 mm hood over the head and top of the neck rather than a full-depth shell. It clears the torso column by at least 4.2 mm at rest even with full nod and full tilt together (14 to 16 mm with one axis alone), and the Jolly head drops to about 233 g, inside the 250 g neck-servo budget. About 38 mm of neck flange shows below the hood; the fur covers it. The character shells are placeholders in shape: a better route is to generate them from the render with an image-to-3D tool (Hi3D or similar), then hollow them to a 1.5 mm wall and cut the collar ring in. The base stays hand-drawn CAD.
+**CAD status (17 Oct, evening; updated 23 Oct):** the whole base is drawn in CadQuery and exported as 39 print-ready STL files: a one-piece base plate (160 × 160 × 48 mm; the old `base_plate_left` and `base_plate_right` files are superseded and not printed), turntable with the 72 mm bearing seat and a separate 34 × 34 × 5 mm turntable hub (`turntable_hub`, 3.4 g, so the turntable prints without supports), torso column with the bob carriage and lift lever, three-part neck gimbal (neck base A redesigned to print without supports, with a 45 degree sleeve and skirt and M3 × 10 cross screws in counterbores), head sphere halves with the 110 mm collar and six magnet pockets, four optional skin rings, shoulder sockets and arm horns (the shoulder caps are no longer printed; `shoulder_cap` stays in the code at 0 copies), a dummy core, plus the six character shells (cloud, pear, frog, heart, Jolly, Claude) and the beret, round glasses and sunglasses clip-ons. Height 311 mm, bob throw 34 mm. One shared base set is about 755 g of filament (model estimate, 25% infill), each skin 98 to 133 g. All the hidden parts print without supports; only the head halves, the shells, the Cloud formers and the clip-ons need them. One thing to check before any real print: servo and bearing pocket sizes are from datasheets, not measured, so print one shoulder socket and the neck base first. **Jolly hood fixed (21:10):** the hood's open lower edge was raised from 58 mm below the head centre to 26 mm, so it is now a 126 mm hood over the head and top of the neck rather than a full-depth shell. It clears the torso column by at least 4.2 mm at rest even with full nod and full tilt together (14 to 16 mm with one axis alone), and the Jolly head drops to about 233 g, inside the 250 g neck-servo budget. About 38 mm of neck flange shows below the hood; with no fur in the first build it shows, so print or paint it to match. The character shells are placeholders in shape: a better route is to generate them from the render with an image-to-3D tool (Hi3D or similar), then hollow them to a 1.5 mm wall and cut the collar ring in. The base stays hand-drawn CAD.
 
 ![The six printed character shells (Claude added 20 Oct) and three clip-ons from the CAD, Jolly hood at its final height](images/04-shells-and-clip-ons.png)
 
@@ -84,22 +84,24 @@ The MG90S has the same body and tabs as the MG90D the CAD was first drawn for, b
 
 Head mass budget is 250 g including the skin, or the small gimbal servos stall. The head former is a hollow Ø120 mm printed sphere in two halves. Every skin attaches at a Ø110 mm collar carrying six 5 mm magnets at 60° spacing, the same arrangement Reachy Mini uses, so skins swap in seconds.
 
-## Skins: all printed, fur or fleece over the top
+## Skins: all printed, coloured or painted, no fabric in the first build
 
-Every character is a hollow printed shell that clips over the head sphere and torso and carries the magnet collar, so skins still swap in seconds. The fuzzy look comes from fabric glued over the shell: long-pile faux fur for Jolly, fleece or flock for the dots. Custom plush is parked; the base would take one later without changes.
+Every character is a hollow printed shell that clips over the head sphere and torso and carries the magnet collar, so skins still swap in seconds. The first build has no fabric: each shell is printed in its colour or painted. Only one skin is needed to start (the Frog, option 1 below), so the first build needs one colour.
+
+Fabric was dropped on 23 Oct. Rough estimates from each shell's surface area and typical fabric weights (not the real listings) put long-pile fur and glue at about 26 to 49 g on Jolly, taking the head to about 259 to 282 g against the 250 g budget; fleece takes Clawd to about 250 to 265 g. Long pile is also deeper than the gaps round the moving neck (Jolly's hood clears the torso column by 4.2 mm, Clawd's shell clears the base by 10.6 mm), so it could snag, and gluing six skins is a lot of work for a first build. Fur is decided later for Jolly only, once the base and the magnet swap are proven and a real offcut has been weighed. Thinning Jolly's walls to 1.0 mm, as was done for Clawd, would save roughly 30 g (scaled from Clawd's figures). Custom plush is parked; the base would take one later without changes.
 
 | Toy | Shell | Finish | Filament |
 | --- | --- | --- | --- |
-| Jolly | Hooded head-and-torso shell in two halves, mitten hands printed on the arm wires, stubby feet on the base plate | Cream faux fur glued over; felt oval face patch; dot eyes and smile line in felt or stitching | 127.0 g |
-| Cloud | Cloud silhouette over the head sphere, beret printed on | Blue fleece wrap or flock | 133.2 g (formers plus beret) |
-| Pear | Pear or rounded-triangle shell, glasses printed as a clip-on | Yellow fleece or flock | 122.4 g (with the round glasses) |
-| Frog | Rounded frog shell with eye bumps | Green fleece or flock | 98.0 g |
-| Heart | Heart shell, sunglasses printed as a clip-on | Pink fleece or flock | 114.7 g (with the sunglasses) |
-| Claude (Clawd) | Rounded box shell in two halves with two hollow stub arms, 1.0 mm wall; four soft sewn fleece legs | Short terracotta anti-pill fleece, black bead eyes | 124.9 g |
+| Jolly | Hooded head-and-torso shell in two halves, mitten hands printed on the arm wires, stubby feet on the base plate | Cream, printed or painted; oval face patch and smile line painted on, printed dot eyes. Fur decided later | 127.0 g |
+| Cloud | Cloud silhouette over the head sphere, beret printed on | Blue, printed or painted | 133.2 g (formers plus beret) |
+| Pear | Pear or rounded-triangle shell, glasses printed as a clip-on | Yellow, printed or painted | 122.4 g (with the round glasses) |
+| Frog | Rounded frog shell with eye bumps | Green, printed or painted (the first-build skin) | 98.0 g |
+| Heart | Heart shell, sunglasses printed as a clip-on | Pink, printed or painted | 114.7 g (with the sunglasses) |
+| Claude (Clawd) | Rounded box shell in two halves with two hollow stub arms, 1.0 mm wall; no legs in the first build | Terracotta (about #C96A4A), printed or painted; black bead eyes | 124.9 g |
 
 The six skins come to 720 g, about £14.40 at £20/kg (model estimate from `out/print_cost.txt`, supports allowance included; the slicer on the real printer wins).
 
-Shell rules: 1.5 mm walls, 0 to 5% infill. The shells and clip-ons need supports; the hidden base parts do not. A hollow 1.5 mm wall prints almost all as perimeters, so a finished skin comes out at about 98 to 133 g before fabric. The head budget above still applies: Jolly is the heaviest at about 233 g against 250 g. Eyes are printed white discs with black pupils glued on; the same pockets take LED matrices later.
+Shell rules: 1.5 mm walls, 0 to 5% infill. The shells and clip-ons need supports; the hidden base parts do not. A hollow 1.5 mm wall prints almost all as perimeters, so a finished skin comes out at about 98 to 133 g, with no fabric on top. The head budget above still applies: Jolly is the heaviest at about 233 g against 250 g, which leaves only about 17 g, too little for long-pile fur as the shell stands. Eyes are printed white discs with black pupils glued on; the same pockets take LED matrices later.
 
 ## Electronics on the one base: the lean build
 
@@ -115,12 +117,12 @@ The one shared base is self-contained: one ESP32 on Wi-Fi, servos driven straigh
 | 5 × 2 mm magnets | 42 | Head 6 + 6 per skin × 6; 72 if every dummy core gets magnets, 96 with the four spare rings |
 | Springs, M2 and M3 screws, 2 mm armature wire, leads | 1 set | The screw kit covers the 4 M2 × 8 hub screws and the 2 M3 × 10 neck screws |
 | Filament, 2 kg | 1.65 kg of parts, leaving about 0.35 kg for failed prints | Base, six skins and five dummy cores; we supply the spools |
-| Faux fur, fleece or flock, glue | 1 set | Covers all six skins |
-| Total |  | about £192.31 (shopping list below), spares not included beyond those listed |
+| Paint for the shells | 1 set, only if the shells are not printed in colour | Not priced; fabric is out of the first build |
+| Total |  | about £134.57 (shopping list below), plus paint if used; spares not included beyond those listed |
 
 ### MVP costing (added 17 Oct, revised 23 Oct for one base)
 
-The earlier five-toy figures (£243 for five, £245 in two steps) are superseded. With one shared base there is nothing to multiply: the whole spend is the one-base shopping list below, about £192.31, which includes the filament for all six skins and five dummy cores and the fur and fleece for all six skins. If you want to spend it in two steps, buy the base electronics, servos, bearing and filament first and prove the base with one skin on it; the fur and fleece can wait. Andy printing is assumed throughout (the filament line above is for the parts Andy prints); if that falls through, the printer in the backup plan below is the one line that would add to the total.
+The earlier five-toy figures (£243 for five, £245 in two steps) are superseded. With one shared base there is nothing to multiply: the whole spend is the one-base shopping list below, about £134.57, which includes the filament for all six skins and five dummy cores. Fabric is out of the first build (23 Oct, saving £57.74); paint, needed only if the shells are not printed in colour, is extra and not priced. If you want to spend it in two steps, buy the base electronics, servos, bearing and filament first and prove the base with one skin on it. Andy printing is assumed throughout (the filament line above is for the parts Andy prints); if that falls through, the printer in the backup plan below is the one line that would add to the total.
 
 Voice, first build: the spare Home Assistant Voice puck, £0.
 
@@ -142,20 +144,21 @@ Same UK prices as the 20 Oct 2026 six-toy basket. The pack sizes below are deriv
 | M2 to M5 screw and nut kit, spring assortment (covers the 4 M2 × 8 hub screws and the 2 M3 × 10 neck screws) | 1 each | £10.79 | A B0GKGWVQNF, A B07WFPPXXX |
 | Jumper wires, servo extension leads | 1 kit, 1 pack | £12.98 | A B0BZ7PYYLB, A B08727XZBQ |
 | PLA filament, 2 kg at £18/kg (1.65 kg of parts, leaving about 0.35 kg for failed prints) | 2 kg | £36.00 | A B0GTLQ31W1 (the 20 Oct listing was £31.44 for 4.4 kg; this line keeps the old £18/kg price, not re-checked, while the print cost figures now use £20/kg) |
-| Long-pile faux fur, five colours at 50 × 180 cm (£8.99 each); terracotta anti-pill fleece for Clawd, 1 m × 150 cm; glue gun (unchanged, covers all six skins) | 5 + 1 + 1 | £57.74 | A B0FB9CNYR7, A B0CVLJB56L, A B0DDKG29ND |
-| **Total** |  | **about £192.31** | one base, six skins |
+| **Total** |  | **about £134.57** | one base, six skins, no fabric; paint extra if used |
+
+Dropped on 23 Oct, kept here for when Jolly's fur is decided: long-pile faux fur in five colours at 50 × 180 cm (£8.99 each), terracotta anti-pill fleece for Clawd at 1 m × 150 cm, and a glue gun, £57.74 in all (A B0FB9CNYR7, A B0CVLJB56L, A B0DDKG29ND). Jolly would need only the cream fur and the glue gun.
 
 The bearing line is the old basket's price for its 8-bearing pack (£12.58). The smallest pack size was not checked, so treat £12.58 as an upper bound.
 
 Before: the six-toy basket, with a full rig for each toy, was £342.60 (about £57 a toy).
 
-Not in the total: print labour, PETG for the gimbal and lift arm, a speaker and mic, steel washers for ballast, rubber feet, 2 mm armature wire and the 5 V buck converter. No dowel pins are needed now that the base plate is one piece.
+Not in the total: print labour, paint for the shells if they are not printed in colour, PETG for the gimbal and lift arm, a speaker and mic, steel washers for ballast, rubber feet, 2 mm armature wire and the 5 V buck converter. No dowel pins are needed now that the base plate is one piece.
 
-Optional: one PCA9685 servo board (A B0D7RQ5JXY). The 17 Oct estimate was £14 a board; the old six-toy basket listed £25.62 for its set, and that listing's pack size is not recorded here, so £25.62 is the upper bound. That makes about £206 to £218 in all. The lean build drives the servos straight from the ESP32, so the board is only for tidier wiring.
+Optional: one PCA9685 servo board (A B0D7RQ5JXY). The 17 Oct estimate was £14 a board; the old six-toy basket listed £25.62 for its set, and that listing's pack size is not recorded here, so £25.62 is the upper bound. That makes about £149 to £160 in all. The lean build drives the servos straight from the ESP32, so the board is only for tidier wiring.
 
 Checks before ordering:
 
-- Fur: Clawd takes short terracotta fleece, not the long-pile fur. The listing is called "Terracotta" but shows no true swatch, so check it against #C96A4A (Neotrims "Rust Brick", A B07HWYN213, £8.25, is the fallback). The other five long-pile colours exist: cream, sky blue, yellow, light green and pink. The fur arrives last, on 29 Oct.
+- Fur: not bought for the first build (see the dropped fabric line above). If it comes back: the five long-pile colours exist (cream, sky blue, yellow, light green and pink); the Clawd fleece listing is called "Terracotta" but shows no true swatch, so check it against #C96A4A (Neotrims "Rust Brick", A B07HWYN213, £8.25, is the fallback).
 - Magnets: the 100-pack does not state its grade. Confirmed N35 costs £19.98 for 2 × 50 (A B00TACMMP0). The 100-pack covers the 42 magnets needed, and also the 72 or 96 if the dummy cores and spare rings get magnets.
 - Supply: one 5 V 4 A supply for the one base. The old warning against sharing one supply across six toys no longer applies, because there is only one base.
 - Genuine TowerPro MG996R are £9 each at The Pi Hut, so £18 for the two needed. The cheap servos and ESP32s are unbranded clones, which is normal for this kind of build.
@@ -227,9 +230,9 @@ So: the base set and one skin from Andy proves the design; if the full run is to
 
 1. Bench: ESP32 + two servos on external 5 V, first Bottango clip. One evening.
 2. First base printed and assembled: turn, bounce, nod, tilt. First idle loop. One weekend.
-3. First dot shell on, fleece over it. Prove the magnet swap.
-4. The other skins and the five dummy cores printed; the skins dressed.
-5. Jolly shell, fur wrap, arms (the arm horns and wire on the base's shoulder servos).
+3. First dot shell on (the Frog, printed in colour or painted, no fabric). Prove the magnet swap.
+4. The other skins and the five dummy cores printed, and the skins painted if they were not printed in colour.
+5. Jolly shell and arms (the arm horns and wire on the base's shoulder servos). Decide Jolly's fur here: weigh a real offcut first, since the head has only about 17 g spare.
 6. REST on the base, the MCP server, the six character profiles (voice and personality), speech-driven bounce.
 7. Later: LED eyes, speaker and mic on the base, live AI mode.
 
@@ -238,5 +241,8 @@ Open questions
 - [ ] Andy: is PETG fine for the gimbal and lift arm, or all PLA? (The bed size is settled: the Bambu Lab H2D, and every part fits it.)
 - [ ] Andy: can the printer take 42 to 67 hours over two to three weeks without it being a pain?
 - [ ] Andy: spools from us, or we pay for yours?
-- [ ] Fuzzy finish on the dots: fleece wrap or flock? Flock is DIY, no UK service found.
+- [x] Fuzzy finish on the dots: none in the first build (23 Oct); the shells are printed in colour or painted.
+- [ ] Andy: can the skins print in colour from your spools (green for the Frog first), or do we paint plain prints?
+- [ ] Jolly's fur: decide after the base and magnet swap are proven, against the 17 g left in the head budget.
+- [ ] Clawd's legs: leave them off, or sew on soft legs later?
 - [ ] Bottango on the spare ESP32-C3 boards is unverified; a classic ESP32 WROOM is the safe buy.

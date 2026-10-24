@@ -226,6 +226,7 @@ BASE_WELLS = ((22.0, -55.0), (-32.0, 49.0))         # washer ballast wells
 JACK_POCKET_R = 60.0                                # barrel-jack nut pocket centre radius (at -135 degrees)
 SPEAKER_Y1 = 74.0                                   # front face of the speaker pocket
 BASE_LANE_X = (-42.5, 44.0)                         # cable lane from the yaw servo to the ESP32 and PCA9685 bays
+YAW_CX = MG996_L / 2 - MG996_SHAFT_OFF              # yaw servo body centre x: puts its shaft (at the body's -x end) on the axis
 FOOT_PCR, FOOT_R, FOOT_DEPTH = 58.0, 6.1, 1.5       # rubber feet recesses
 # --- hollowing: open-top pockets, kept only where they save plastic at the settings in print_settings.py ----------
 BASE_FLOOR_T = 3.0                                  # solid floor under every pocket
@@ -257,14 +258,15 @@ def base_feature_tools(split_join=False):
     by = (MG996_W + 2 * CLEAR) / 2
     tab_top_z = Z_YAW_TOP - (MG996_H - MG996_TAB_TOP)
     ledge_z = tab_top_z - MG996_TAB_T               # underside of the tabs rests here
-    tools.append(box(-bx, bx, -by, by, 3.0, ledge_z + 0.01))                       # body pocket
+    tools.append(box(YAW_CX - bx, YAW_CX + bx, -by, by, 3.0, ledge_z + 0.01))      # body pocket
     sx = (MG996_TAB_SPAN + 2 * CLEAR) / 2
-    tools.append(box(-sx, sx, -by, by, ledge_z, BASE_H + 1))                       # tab slot
+    check_inside("yaw servo", rect_pts(YAW_CX, 0, 2 * sx, 2 * by))
+    tools.append(box(YAW_CX - sx, YAW_CX + sx, -by, by, ledge_z, BASE_H + 1))      # tab slot
     for sx_ in (-1, 1):
         for sy_ in (-1, 1):
-            tools.append(cylz(sx_ * MG996_HOLE_DX / 2, sy_ * MG996_HOLE_DY / 2, -1, ledge_z + 0.01, MG996_HOLE_D / 2))   # through: no trapped support
+            tools.append(cylz(YAW_CX + sx_ * MG996_HOLE_DX / 2, sy_ * MG996_HOLE_DY / 2, -1, ledge_z + 0.01, MG996_HOLE_D / 2))   # through: no trapped support
     # cable lane: servo lead -> up a groove -> sideways under the bearing to the ESP32 and PCA9685 bays
-    tools.append(box(-3, 3, by - 0.2, by + 4, 3.0, ledge_z + 12))
+    tools.append(box(YAW_CX - 3, YAW_CX + 3, by - 0.2, by + 4, 3.0, ledge_z + 12))
     tools.append(box(BASE_LANE_X[0], BASE_LANE_X[1], by - 0.2, by + 6, ledge_z, ledge_z + 11))
 
     # electronics bays (open on top, covered by the turntable plate)
@@ -352,12 +354,13 @@ def base_keep_solids(skip=()):
     k, z0, z1 = BASE_KEEP, BASE_FLOOR_T - 0.01, BASE_H + 1
     bx = (MG996_TAB_SPAN + 2 * CLEAR) / 2
     by = (MG996_W + 2 * CLEAR) / 2
-    r_core = max(math.hypot(bx, by), BEARING_SCREW_R + 1.35) + k       # yaw-servo tab slot and the bearing screw pilots
+    r_core = BEARING_SCREW_R + 1.35 + k                                  # the bearing screw pilots
     r_seat = BEARING_OD / 2 + CLEAR + k                                  # round the bearing seat
     z_seat = Z_BEAR0 - k                                                 # solid floor under the seat
     z_flare = z_seat - (r_seat - r_core)                                 # 45 degree flare from the core out under the seat
     keep = [cq.Workplane("XZ").polyline([(0, z0), (r_core, z0), (r_core, z_flare), (r_seat, z_seat), (r_seat, z1), (0, z1)])
             .close().revolve(360, (0, 0, 0), (0, 1, 0))]
+    keep.append(box(YAW_CX - bx - k, YAW_CX + bx + k, -by - k, by + k, z0, z1))   # yaw-servo tab slot (off-centre: shaft on the axis)
     if "bays" not in skip:
         for (cx, cy, sx_, sy_) in BASE_BAYS.values():
             w, h = sx_ + 2 * CLEAR + 2 * k, sy_ + 2 * CLEAR + 2 * k

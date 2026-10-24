@@ -1,5 +1,5 @@
 file,copies,volume_cm3,x_mm,y_mm,z_mm,grams_25pct_infill,grams_if_solid,supports,thin_wall,stl_bytes
-base_plate,1,390.4,160.1,160.1,48.1,121.0,484.2,"none (one piece; pockets open on top; speaker/jack holes bridge by a few mm)",False,543284
+base_plate,1,396.2,160.1,160.1,48.1,122.8,491.3,"none (one piece; pockets open on top; speaker/jack holes bridge by a few mm)",False,537784
 turntable,1,99.1,150.0,150.1,43.2,30.7,122.9,"none (plate down, cradle up; servo slot open at the top)",False,455684
 turntable_hub,1,2.7,34.0,34.0,5.2,0.8,3.4,"none (floor down)",False,158384
 column_left,1,46.8,58.1,116.1,100.1,14.5,58.0,"none (stands on its foot ring, lugs have 45 deg undersides)",True,236884

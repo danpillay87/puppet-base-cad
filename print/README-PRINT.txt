@@ -1,8 +1,11 @@
-DESK ANIMATRONICS - PRINT PACK (20 Oct 2026, updated 23 Oct 2026)
+DESK ANIMATRONICS - PRINT PACK (20 Oct 2026, updated 24 Oct 2026)
 ==================================================================
 
 PRINT THE SKELETON FIRST
 ------------------------
+24 Oct fix: base_plate.stl is new. The turntable servo's slot has moved about 10 mm
+so its shaft sits on the turning axis. Do not use the 23 Oct base_plate.stl.
+
 Print at 100% scale: no shrink compensation (in Bambu Studio, leave the filament's
 Shrinkage (XY) at 100%). All 14 files below print without supports.
 
@@ -21,7 +24,7 @@ neck_head_plate_C.stl       1   (PETG if you have it, PLA is fine)
 shoulder_socket_left.stl    1
 shoulder_socket_right.stl   1
 arm_horn.stl                2
-Total: 15 pieces, about 656 g, roughly 17-26 hours on the H2D (about 2 plates).
+Total: 15 pieces, about 658 g, roughly 17-26 hours on the H2D (about 2 plates).
 
 Later: head_half_left and head_half_right (these need supports), then the skins
 and the five dummy cores (groups 2 and 3 below). Do not print anything in
@@ -37,7 +40,7 @@ Both shoulder servos stay fitted; the yeti's two arm horns are part of the base 
 and come off when an armless skin goes on. The five skins that are not on the base
 sit on a printed dummy core on the shelf.
 What they look like (this picture shows the first five; the sixth, Claude, is Clawd, the
-Claude Code mascot: a boxy terracotta body with two stub arms and four soft fleece legs,
+Claude Code mascot: a boxy terracotta body with two stub arms (no legs and no fabric in the first build),
 see docs/images/06-six-toys-concept.png in the repo):
 https://d8j0ntlcm91z4.cloudfront.net/user_3ElkytIwAZasEJ6yWmCzklZkS3B/hf_20261017_140641_e573edb6-a83d-4693-99ff-e605dbf3bbe1.png
 
@@ -72,13 +75,13 @@ the only bridges left are short ones (12 mm jack hole, 6 mm channels, magnet
 pocket roofs).
 Base hollowing: at 25% infill 5 of the 10 open-top pockets in the base plate pay and
 are cut (the two big wells plus the voids under the ESP32, the PCA9685 and the buck
-converter, about 40 g saved in total); the other 5 stay solid. At the old 15% infill
+converter, about 38 g saved in total); the other 5 stay solid. At the old 15% infill
 only 2 paid (about 3 g). The report is out/base_pockets.csv.
 After changing a setting, run .venv\Scripts\python.exe print_cost.py; it writes
 out/print_cost.txt.
 
 GROUP 1 - BASE SET (print ONE set, shared by all six toys; 16 files, 17 pieces,
-about 755 g, GBP 15.11, roughly 19-30 printer hours at 25-40 g/h as a guide)
+about 757 g, GBP 15.14, roughly 19-30 printer hours at 25-40 g/h as a guide)
 ---------------------------------------------------------------------------------
 File                      Qty  Size (mm)        Supports
 base_plate                1    160 x 160 x 48   none  (one piece; replaces base_plate_left/right)
@@ -112,6 +115,7 @@ in Group 2.)
 GROUP 2 - CHARACTER SHELLS (one skin per character, each skin 98-133 g with its clip-ons)
 -----------------------------------------------------------------------------------------
 Each shell is two halves that lie on their split face. Tree supports.
+No fabric in the first build: print each shell in its colour, or paint it.
 Skin totals: Jolly 127.0 g, Clawd 124.9 g, Cloud 133.2 g (formers + beret),
 Pear 122.4 g (with round glasses), Frog 98.0 g, Heart 114.7 g (with sunglasses).
 Six skins: 720 g, GBP 14.40, roughly 18-29 printer hours.
@@ -122,7 +126,7 @@ shell_jolly_left / right    126 x 144 x 72   supports on the hood peak, flank sl
 shell_claude_left / right   110 x 130 x 98   supports on the flat roof (inside of the outer side wall)
                                              and the arm ends (pair about 125 g with the supports
                                              allowance; thin 1.0 mm wall, use a brim; Clawd's four
-                                             legs are soft fleece, not printed)
+                                             legs are not printed; left off for now)
 cloud_former_left / right   103 x 131 x 67   YES, puffs and crown, tree supports (the Cloud skin)
 
 GROUP 3 - CLIP-ONS (one each, small)
@@ -142,13 +146,13 @@ like the head; magnets in the cores are optional.
 
 Totals (model estimate from out/print_cost.txt; the slicer on the real printer wins)
 ------------------------------------------------------------------------------------
-One base + six skins + five dummy cores = about 1,645 g (1.65 kg), GBP 32.91 of
+One base + six skins + five dummy cores = about 1,647 g (1.65 kg), GBP 32.94 of
 filament at GBP 20/kg, and about 42-67 printer hours on the H2D (25-40 g/h, about
 7 plates at 6 minutes set-up each; a guide only).
-  Base set 755 g (GBP 15.11, about 19-30 h), six skins 720 g (GBP 14.40, about
+  Base set 757 g (GBP 15.14, about 19-30 h), six skins 720 g (GBP 14.40, about
   18-29 h), five dummy cores 170 g (GBP 3.40, about 4-7 h; 34 g, GBP 0.68 each).
-Option 1 (one test toy: the shared base set + the Frog skin): 18 pieces, about 853 g,
-GBP 17.07, about 22-34 h. Option 2 (the full run above): 41 pieces.
+Option 1 (one test toy: the shared base set + the Frog skin): 18 pieces, about 855 g,
+GBP 17.10, about 22-34 h. Option 2 (the full run above): 41 pieces.
 Before the shared base, at the old 15% infill (so not comparable with the figures
 above): base set 721 g, one shared base + six skins 1,481 g, six full toys each with
 its own base 5,100 g.

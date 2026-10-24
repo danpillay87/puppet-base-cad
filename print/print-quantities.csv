@@ -1,5 +1,5 @@
 STL file,Qty - Option 1 (one test toy: the shared base set + Frog skin),Qty - Option 2 (one shared base + six skins + five dummy cores),Material,Supports,Size mm (x y z),Notes
-base_plate.stl,1,1,PLA,none,160 x 160 x 48,"one piece (replaces base_plate_left/right); at 25% infill 5 of the 10 open-top pockets are cut (two big wells plus the voids under the ESP32, PCA9685 and buck-converter bays), about 40 g saved"
+base_plate.stl,1,1,PLA,none,160 x 160 x 48,"one piece (replaces base_plate_left/right); at 25% infill 5 of the 10 open-top pockets are cut (two big wells plus the voids under the ESP32, PCA9685 and buck-converter bays), about 38 g saved"
 turntable.stl,1,1,PLA,none,150 x 150 x 43,plate down; servo slot open at the top
 turntable_hub.stl,1,1,PLA,none,34 x 34 x 5,floor down; 4x M2 x 8 through the yaw horn
 column_left.stl,1,1,PLA,none,58 x 116 x 100,brim helps
@@ -36,4 +36,4 @@ cloud_former_right.stl,0,1,PLA,yes - puffs and crown (tree supports),103 x 131 x
 clip_beret.stl,0,1,PLA,yes - under the saucer,118 x 115 x 51,
 clip_glasses_round.stl,0,1,PLA,yes - light tree supports under the lower rims and temple bands,109 x 82 x 26,Pear
 clip_sunglasses.stl,0,1,PLA,yes - light tree supports under the lens plates and temple bands,138 x 88 x 21,Heart
-TOTAL pieces,18,41,,,,"Option 1 about 853 g, GBP 17.07 (about 22-34 printer hours on the H2D); Option 2 about 1,645 g, GBP 32.91 at GBP 20/kg (about 42-67 hours). Rings add 8.5 g each. Figures from print_cost.py with print_settings.py: Bambu Lab H2D (325 x 320 x 325 mm, every part fits; a 220 x 220 bed would also fit), 0.4 mm nozzle, 0.2 mm layers, 3 walls, 25% infill, Bambu PLA Basic at GBP 20/kg; the slicer's estimate wins. Shrink compensation is still to be agreed with Andy; the parts are drawn true size."
+TOTAL pieces,18,41,,,,"Option 1 about 855 g, GBP 17.10 (about 22-34 printer hours on the H2D); Option 2 about 1,647 g, GBP 32.94 at GBP 20/kg (about 42-67 hours). Rings add 8.5 g each. Figures from print_cost.py with print_settings.py: Bambu Lab H2D (325 x 320 x 325 mm, every part fits; a 220 x 220 bed would also fit), 0.4 mm nozzle, 0.2 mm layers, 3 walls, 25% infill, Bambu PLA Basic at GBP 20/kg; the slicer's estimate wins. Shrink compensation is still to be agreed with Andy; the parts are drawn true size."
